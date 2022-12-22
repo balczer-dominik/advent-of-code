@@ -168,7 +168,6 @@ const func2 = (input: string[]) =>
   parseBlueprints(input)
     .slice(0, 3)
     .map((blueprint) => mostCollectable(blueprint, 32).resources[GEODE])
-
     .reduce(multiplyNumbers);
 
 console.log(1, func1(testInput));
