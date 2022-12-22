@@ -1,5 +1,6 @@
-import { simpleParseInt, sortAsc, sortDesc, Triplet } from "../util/helpers";
+import { simpleParseInt, sortAsc, sortDesc } from "../util/helpers";
 import { readInputs } from "../util/input";
+import { Triplet } from "../util/Tuple";
 
 const [input, testInput] = readInputs(__dirname);
 

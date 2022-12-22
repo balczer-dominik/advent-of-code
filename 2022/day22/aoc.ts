@@ -1,21 +1,22 @@
 import {
   Direction2D,
+  Direction2DShort,
   DOWN,
   getField2D,
   LEFT,
   Map2D,
   offset2D,
-  oppositeOffset2D,
+  opposite2D,
+  parseShortDirection2D,
   RIGHT,
   Turn2D,
   turnDirection2D,
   UP,
-  X,
-  Y,
 } from "../util/2d";
-import { minReduce, simpleParseInt, Triplet, Tuple } from "../util/helpers";
+import { minReduce, simpleParseInt } from "../util/helpers";
 import { readInputs } from "../util/input";
 import { abcMatcher, numericMatcher } from "../util/regex";
+import { Triplet, Tuple, X, Y } from "../util/Tuple";
 
 const [input, testInput] = readInputs(__dirname);
 
@@ -60,7 +61,9 @@ const parseInput = (input: string[]) => {
 
   turns.forEach((turn, idx) => {
     instructions.push(steps[idx]);
-    instructions.push(turn as Turn2D);
+    instructions.push(
+      parseShortDirection2D[turn as Direction2DShort] as Turn2D
+    );
   });
   instructions.push(steps.last()!);
 
@@ -72,7 +75,7 @@ const wrapAround: WrappingFunction = (
   currSpot: Tuple,
   currDir: Direction2D
 ) => {
-  const [offsetX, offsetY] = oppositeOffset2D[currDir];
+  const [offsetX, offsetY] = offset2D[opposite2D[currDir]];
 
   let iterSpot = currSpot;
 

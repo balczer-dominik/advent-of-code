@@ -1,10 +1,14 @@
 import { writeFileSync } from "fs";
 import _ from "lodash";
 import { CircularIterator } from "../util/CircularIterator";
-import { Coord, sortAscEx, sortDesc, sortDescEx } from "../util/helpers";
+import { sortAscEx, sortDesc, sortDescEx } from "../util/helpers";
 import { readInputs } from "../util/input";
 
+//Disclaimer: Part 1 was easy enough to solve with code, part 2 however was solved by generating a map where 10000 rocks were dropped and then the solution was calculated with pen and paper and the power of CTRL + F in the generated file.
+
 const [input, testInput] = readInputs(__dirname);
+
+type Coord = { x: number; y: number };
 
 type Rock = {
   coords: Coord[];
@@ -318,4 +322,4 @@ function printStat(toPrint: string[]) {
   writeFileSync("out_stat.txt", toPrint.join("\n"));
 }
 
-console.log(func1(input, 10000));
+console.log(func1(input, 2020));

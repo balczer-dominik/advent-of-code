@@ -1,9 +1,5 @@
 import _ from "lodash";
 
-export type Coord = { x: number; y: number };
-export type Tuple<T = number> = [x: T, y: T];
-export type Triplet<T = number> = [x: T, y: T, z: T];
-export type Quartet<T = number> = [x: T, y: T, z: T, a: T];
 export type ObjectValues<T> = T[keyof T];
 
 export const uniqueFilter = <T>(value: T, index: number, self: T[]) => {

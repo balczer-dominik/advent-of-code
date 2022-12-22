@@ -1,28 +1,33 @@
-import { Tuple } from "./helpers";
+import { Tuple, X, Y } from "./Tuple";
 
-export const X = 0;
-export const Y = 1;
+export const RIGHT = "RIGHT";
+export const LEFT = "LEFT";
+export const UP = "UP";
+export const DOWN = "DOWN";
 
-export const RIGHT = "R";
-export const LEFT = "L";
-export const UP = "U";
-export const DOWN = "D";
-
-export type Direction2D = typeof RIGHT | typeof LEFT | typeof DOWN | typeof UP;
+export type Direction2D = Turn2D | typeof DOWN | typeof UP;
 export type Turn2D = typeof RIGHT | typeof LEFT;
+export type Direction2DShort = "R" | "L" | "U" | "D";
 
 export const offset2D: Record<Direction2D, Tuple> = {
-  R: [1, 0],
-  L: [-1, 0],
-  U: [0, -1],
-  D: [0, 1],
+  RIGHT: [1, 0],
+  LEFT: [-1, 0],
+  UP: [0, -1],
+  DOWN: [0, 1],
 };
 
-export const oppositeOffset2D: Record<Direction2D, Tuple> = {
-  R: [-1, 0],
-  L: [1, 0],
-  U: [0, 1],
-  D: [0, -1],
+export const opposite2D: Record<Direction2D, Direction2D> = {
+  RIGHT: LEFT,
+  LEFT: RIGHT,
+  UP: DOWN,
+  DOWN: UP,
+};
+
+export const parseShortDirection2D: Record<Direction2DShort, Direction2D> = {
+  R: RIGHT,
+  L: LEFT,
+  U: UP,
+  D: DOWN,
 };
 
 export const getField2D = <T>(map: Map2D<T>, coords: Tuple) =>
@@ -32,17 +37,17 @@ export const turnDirection2D: Record<
   Turn2D,
   Record<Direction2D, Direction2D>
 > = {
-  R: {
-    U: RIGHT,
-    R: DOWN,
-    D: LEFT,
-    L: UP,
+  RIGHT: {
+    UP: RIGHT,
+    RIGHT: DOWN,
+    DOWN: LEFT,
+    LEFT: UP,
   },
-  L: {
-    U: LEFT,
-    L: DOWN,
-    D: RIGHT,
-    R: UP,
+  LEFT: {
+    UP: LEFT,
+    LEFT: DOWN,
+    DOWN: RIGHT,
+    RIGHT: UP,
   },
 };
 

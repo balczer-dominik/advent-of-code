@@ -1,11 +1,7 @@
 import _ from "lodash";
-import {
-  maxReduce,
-  multiplyNumbers,
-  Quartet,
-  simpleParseInt,
-} from "../util/helpers";
+import { maxReduce, multiplyNumbers, simpleParseInt } from "../util/helpers";
 import { readInputs } from "../util/input";
+import { Quartet } from "../util/Tuple";
 
 const [input, testInput] = readInputs(__dirname);
 

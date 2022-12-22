@@ -1,3 +1,4 @@
+import { sortDescEx } from "../util/helpers";
 import { readInputs } from "../util/input";
 
 const [input, testInput] = readInputs(__dirname);
@@ -42,51 +43,6 @@ const parseValve = (input: string[]) => {
   let currentValve = valves.find((v) => v.name == "AA")!;
 
   return { unopened, currentValve };
-};
-
-const func1 = (input: string[]) => {
-  const { unopened, currentValve } = parseValve(input);
-
-  const candidates = unopened
-    .map((destValve) => {
-      console.log(destValve.name);
-      return getScore(currentValve, destValve, unopened, 30);
-    })
-    .sort((a, b) => b.score - a.score);
-
-  console.table(
-    candidates.map((p) => ({
-      name: p.destValve.name,
-      dist: p.dist,
-      flow: p.destValve.flowRate,
-      score: p.score,
-    }))
-  );
-
-  return candidates[0].score;
-};
-
-const func3 = (input: string[]) => {
-  const { unopened, currentValve } = parseValve(input);
-
-  const me = unopened
-    .map((destValve) => {
-      console.log(destValve.name);
-      return getScore(currentValve, destValve, unopened, 26);
-    })
-    .sort((a, b) => b.score - a.score)[0];
-
-  console.table(me);
-
-  const elly = me.unopened
-    .map((destValve) => {
-      console.log(destValve.name);
-      return getScore(currentValve, destValve, me.unopened, 26);
-    })
-    .sort((a, b) => b.score - a.score)[0];
-
-  console.table(elly);
-  return me.score + elly.score;
 };
 
 const traverse = (
@@ -138,72 +94,6 @@ const traverse = (
   return bestScore;
 };
 
-const traverseMain = (
-  unopened: Valve[],
-  workers: {
-    minutesLeft: number;
-    currentScore: number;
-    at: Valve;
-    done: boolean;
-  }[]
-): number => {
-  const start = new Date();
-  let i = 0;
-  if (unopened.length === 0 || workers.every((w) => w.done)) {
-    return workers.reduce((acc, curr) => acc + curr.currentScore, 0);
-  }
-
-  const combinations = unopened.flatMap((valve) => {
-    const workersWhoCanTakeIt = workers.filter(
-      (worker) =>
-        !worker.done && getDistFromTo(worker.at, valve) + 1 < worker.minutesLeft
-    );
-    return workersWhoCanTakeIt.map((worker) => ({ valve, worker }));
-  });
-
-  if (combinations.length === 0) {
-    return workers.reduce((acc, curr) => acc + curr.currentScore, 0);
-  }
-
-  let bestScore = 0;
-  for (const { worker, valve } of combinations) {
-    console.log(
-      `${++i}/${combinations.length} in ${
-        (new Date().getTime() - start.getTime()) / 1000
-      }s`
-    );
-
-    const dist = getDistFromTo(worker.at, valve);
-    const minutesLeft = worker.minutesLeft - dist - 1;
-    const newWorker = {
-      at: valve,
-      minutesLeft,
-      currentScore: worker.currentScore + minutesLeft * valve.flowRate,
-      done: minutesLeft <= 1,
-    };
-
-    const score = traverse(
-      unopened.filter((u) => u !== valve),
-      [...workers.filter((w) => w !== worker), newWorker]
-    );
-
-    if (score > bestScore) {
-      bestScore = score;
-    }
-  }
-
-  return bestScore;
-};
-
-const func2 = (input: string[]) => {
-  const { unopened, currentValve } = parseValve(input);
-
-  return traverseMain(unopened, [
-    { minutesLeft: 26, currentScore: 0, done: false, at: currentValve },
-    { minutesLeft: 26, currentScore: 0, done: false, at: currentValve },
-  ]);
-};
-
 const getScore = (
   from: Valve,
   to: Valve,
@@ -222,7 +112,7 @@ const getScore = (
     .map((nextValve) =>
       getScore(to, nextValve, nextPoss, minutesLeft - dist - 1)
     )
-    .sort((a, b) => b.score - a.score)[0];
+    .sort(sortDescEx((v) => v.score))[0];
 
   return {
     destValve: to,
@@ -268,8 +158,29 @@ const getDistance = (
   return curr.length - 1;
 };
 
-function onlyUnique<T>(value: T, index: number, self: T[]) {
-  return self.indexOf(value) === index;
-}
+const func1 = (input: string[]) => {
+  const { unopened, currentValve } = parseValve(input);
 
-console.log(func3(input));
+  const candidates = unopened
+    .map((destValve) => getScore(currentValve, destValve, unopened, 30))
+    .sort(sortDescEx((v) => v.score));
+
+  return candidates[0].score;
+};
+
+const func2 = (input: string[]) => {
+  const { unopened, currentValve } = parseValve(input);
+
+  const me = unopened
+    .map((destValve) => getScore(currentValve, destValve, unopened, 26))
+    .sort(sortDescEx((v) => v.score))[0];
+
+  const elly = me.unopened
+    .map((destValve) => getScore(currentValve, destValve, me.unopened, 26))
+    .sort(sortDescEx((v) => v.score))[0];
+
+  return me.score + elly.score;
+};
+
+console.log(1, func1(input));
+console.log(2, func2(input));
