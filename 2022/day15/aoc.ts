@@ -1,7 +1,9 @@
-import { readFileSync } from "fs";
-const input = readFileSync("input.txt").toString().split("\n");
-const testInput = readFileSync("test_input.txt").toString().split("\n");
+import { readInputs, simpleParseInt, sortAscEx, sortDescEx } from "../helpers";
+
+const [input, testInput] = readInputs(__dirname);
+
 type Coord = { x: number; y: number };
+
 const func = (input: string[]) => {
   const source = { x: 500, y: 0 };
   const parsed = input.map((row) =>
@@ -14,19 +16,34 @@ const func = (input: string[]) => {
           .filter((t) => t !== "\r")
           .join("")
           .split(",")
-          .map((t) => parseInt(t))
+          .map(simpleParseInt)
       )
       .map((t) => ({ x: t[0], y: t[1] }))
   );
+
   const walls = constructWalls(parsed);
   const sand: Coord[] = [];
-  const floorLevel = walls.sort((a, b) => b.y - a.y)[0].y + 2;
+  const floorLevel = walls.sort(sortDescEx((c) => c.y))[0].y + 2;
+
+  const printMap = () => {
+    console.log(sand.length);
+    for (let y = 0; y < 200; y++) {
+      let row: string[] = [];
+      for (let x = 480; x < 600; x++) {
+        const hasWall = walls.some((w) => w.x === x && w.y === y);
+        const hasSand = sand.some((w) => w.x === x && w.y === y);
+        row.push(hasWall ? "#" : hasSand ? "o" : ".");
+      }
+      console.log(row.join(""));
+    }
+  }
+
   const dropSand = (to: Coord): void => {
     const blocked = [...walls, ...sand];
     let down = {
       ...(blocked
         .filter((o) => o.x === to.x && o.y > to.y)
-        .sort((a, b) => a.y - b.y)[0] ?? { x: to.x, y: floorLevel }),
+        .sort(sortAscEx(c => c.y))[0] ?? { x: to.x, y: floorLevel }),
     };
     down = { ...down, y: down.y - 1 };
     if (down.y == floorLevel - 1) {
@@ -51,19 +68,11 @@ const func = (input: string[]) => {
   };
 
   let canDropMore = true;
+
   while (canDropMore) {
     dropSand(source);
     if (sand.length % 1000 === 0) {
-      console.log(sand.length);
-      for (let y = 0; y < 200; y++) {
-        let row: string[] = [];
-        for (let x = 480; x < 600; x++) {
-          const hasWall = walls.some((w) => w.x === x && w.y === y);
-          const hasSand = sand.some((w) => w.x === x && w.y === y);
-          row.push(hasWall ? "#" : hasSand ? "o" : ".");
-        }
-        console.log(row.join(""));
-      }
+      printMap();
     }
 
     canDropMore = !sand.some((s) => s.x === source.x && s.y === source.y);
@@ -78,6 +87,7 @@ const func = (input: string[]) => {
     }
     console.log(row.join(""));
   }
+
   return sand.length;
 };
 
@@ -107,6 +117,7 @@ function constructWalls(parsed: Coord[][]) {
     )
     .filter(onlyUnique);
 }
+
 function onlyUnique(value: Coord, index: number, self: Coord[]) {
   return (
     self.indexOf(self.find((s) => s.x === value.x && s.y === value.y)!) ===
