@@ -1,8 +1,8 @@
 import { writeFileSync } from "fs";
 import _ from "lodash";
+import { CircularIterator } from "../util/CircularIterator";
 import { Coord, sortAscEx, sortDesc, sortDescEx } from "../util/helpers";
 import { readInputs } from "../util/input";
-import { MyCircularIterator } from "../util/MyCircularIterator";
 
 const [input, testInput] = readInputs(__dirname);
 
@@ -11,7 +11,7 @@ type Rock = {
   char: string;
 };
 
-const rocks = new MyCircularIterator(
+const rocks = new CircularIterator(
   {
     coords: [
       { x: 3, y: 4 },
@@ -62,7 +62,7 @@ const rocks = new MyCircularIterator(
 );
 
 const func1 = (input: string[], rockCount: number) => {
-  let gusts = new MyCircularIterator<">" | "<">(
+  let gusts = new CircularIterator<">" | "<">(
     ...(input[0].split("") as (">" | "<")[])
   );
   let highestY = 0;
@@ -224,7 +224,7 @@ const printMapToFile = (
 };
 
 const func2 = (input: string[]) => {
-  let gusts = new MyCircularIterator<">" | "<">(
+  let gusts = new CircularIterator<">" | "<">(
     ...(input[0].split("") as (">" | "<")[])
   );
   let highestY = 0;

@@ -3,7 +3,7 @@ type Item<T> = {
   nextItem: Item<T> | undefined;
 };
 
-export class MyCircularIterator<T> {
+export class CircularIterator<T> {
   private items: Item<T>[];
   private currentValue: Item<T>;
 
