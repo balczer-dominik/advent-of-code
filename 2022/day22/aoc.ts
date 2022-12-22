@@ -95,29 +95,6 @@ const wrapAround: WrappingFunction = (
   }
 };
 
-const getFace = ([x, y]: Tuple): number => {
-  if (x.isBetween(99, 150) && y.isBetween(-1, 50)) {
-    return 1;
-  }
-  if (x.isBetween(49, 100) && y.isBetween(-1, 50)) {
-    return 2;
-  }
-  if (x.isBetween(49, 100) && y.isBetween(49, 100)) {
-    return 3;
-  }
-  if (x.isBetween(49, 100) && y.isBetween(99, 150)) {
-    return 4;
-  }
-  if (x.isBetween(-1, 50) && y.isBetween(99, 150)) {
-    return 5;
-  }
-  if (x.isBetween(-1, 50) && y.isBetween(149, 200)) {
-    return 6;
-  }
-
-  throw new Error("invalid coord " + x + ", " + y);
-};
-
 const wrapAroundCube: WrappingFunction = (
   map: Map2D<Field>,
   [previousSpotX, previousSpotY]: Tuple,
@@ -213,7 +190,6 @@ const traverse = (
 ): Triplet => {
   let currDir: Direction2D = RIGHT;
   let currSpot: Tuple = [[...map.get(0)!.keys()].reduce(minReduce), 0];
-  let currFace = getFace(currSpot);
 
   instructions.forEach((instruction) => {
     if (typeof instruction === "number") {
@@ -233,10 +209,6 @@ const traverse = (
         if (fieldOnNewSpot === WALL) {
           break;
         } else {
-          const newFace = getFace(newSpot);
-          if (currFace != getFace(newSpot)) {
-            currFace = newFace;
-          }
           currDir = newDir;
           currSpot = newSpot;
         }
