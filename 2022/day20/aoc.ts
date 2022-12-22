@@ -16,7 +16,7 @@ const getNewIndex = (oldIndex: number, moveBy: number, length: number) => {
 const func = (input: string[], mixingCycles: number, decryptionKey: number) => {
   let numbers = input
     .map(simpleParseInt)
-    .map((moveBy, order) => ({ moveBy: moveBy, order }));
+    .map((moveBy, order) => ({ moveBy, order }));
 
   const numbersCopy = _.cloneDeep(numbers);
   for (let index = 0; index < mixingCycles; index++) {
