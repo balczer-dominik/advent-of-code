@@ -170,5 +170,5 @@ const func2 = (input: string[]) =>
     .map((blueprint) => mostCollectable(blueprint, 32).resources[GEODE])
     .reduce(multiplyNumbers);
 
-console.log(1, func1(testInput));
+console.log(1, func1(input));
 console.log(2, func2(input));
