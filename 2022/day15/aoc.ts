@@ -1,4 +1,5 @@
-import { readInputs, simpleParseInt, sortAscEx, sortDescEx } from "../helpers";
+import { simpleParseInt, sortAscEx, sortDescEx } from "../util/helpers";
+import { readInputs } from "../util/input";
 
 const [input, testInput] = readInputs(__dirname);
 
@@ -21,9 +22,9 @@ const func = (input: string[]) => {
       .map((t) => ({ x: t[0], y: t[1] }))
   );
 
-  const walls = constructWalls(parsed);
+  const walls = constructWalls(parsed).sort(sortDescEx((c) => c.y));
   const sand: Coord[] = [];
-  const floorLevel = walls.sort(sortDescEx((c) => c.y))[0].y + 2;
+  const floorLevel = walls[0].y + 2;
 
   const printMap = () => {
     console.log(sand.length);
@@ -36,14 +37,14 @@ const func = (input: string[]) => {
       }
       console.log(row.join(""));
     }
-  }
+  };
 
   const dropSand = (to: Coord): void => {
     const blocked = [...walls, ...sand];
     let down = {
       ...(blocked
         .filter((o) => o.x === to.x && o.y > to.y)
-        .sort(sortAscEx(c => c.y))[0] ?? { x: to.x, y: floorLevel }),
+        .sort(sortAscEx((c) => c.y))[0] ?? { x: to.x, y: floorLevel }),
     };
     down = { ...down, y: down.y - 1 };
     if (down.y == floorLevel - 1) {

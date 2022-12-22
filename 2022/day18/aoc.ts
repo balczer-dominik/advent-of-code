@@ -1,12 +1,7 @@
-import {
-  readInputs,
-  simpleParseInt,
-  sortAsc,
-  sortDesc,
-  Triplet
-} from "../helpers";
+import { simpleParseInt, sortAsc, sortDesc, Triplet } from "../util/helpers";
+import { readInputs } from "../util/input";
 
-const { input, testInput } = readInputs(__dirname);
+const [input, testInput] = readInputs(__dirname);
 
 const sides = ["N", "E", "W", "S", "U", "D"] as const;
 type Side = typeof sides[number];
@@ -30,7 +25,7 @@ type CubeMap = Map<number, GridMap>;
 
 const func1 = (input: string[]) => {
   const triplets = input.map(
-    (row) => [...row.split(",").map(simpleParseInt)] as Triplet<number>
+    (row) => [...row.split(",").map(simpleParseInt)] as Triplet
   );
 
   const map: CubeMap = constructMap(triplets);
@@ -67,7 +62,7 @@ const countFreeSides = (map: CubeMap) => {
   return sidesFree;
 };
 
-const constructMap = (triplets: Triplet<number>[]): CubeMap => {
+const constructMap = (triplets: Triplet[]): CubeMap => {
   const map: CubeMap = new Map();
   triplets.forEach((cube) => {
     const z = map.get(cube[Z]) ?? (new Map() as GridMap);
@@ -81,7 +76,7 @@ const constructMap = (triplets: Triplet<number>[]): CubeMap => {
 
 const func2 = (input: string[]) => {
   const triplets = input.map(
-    (row) => [...row.split(",").map(simpleParseInt)] as Triplet<number>
+    (row) => [...row.split(",").map(simpleParseInt)] as Triplet
   );
 
   const map: CubeMap = constructMap(triplets);
@@ -95,13 +90,9 @@ const func2 = (input: string[]) => {
   const zLowerBound = triplets.map((t) => t[Z]).sort(sortAsc)[0] - 2;
 
   let visibleSides = 0;
-  let current = [
-    xLowerBound + 1,
-    yLowerBound + 1,
-    zLowerBound + 1,
-  ] as Triplet<number>;
-  const queue: Triplet<number>[] = [current];
-  const visited: Triplet<number>[] = [current];
+  let current = [xLowerBound + 1, yLowerBound + 1, zLowerBound + 1] as Triplet;
+  const queue: Triplet[] = [current];
+  const visited: Triplet[] = [current];
   while (queue.length > 0) {
     current = queue.shift()!;
     Object.values(offsets).forEach((v) => {

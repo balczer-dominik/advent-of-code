@@ -1,7 +1,6 @@
-import { readFileSync } from "fs";
+import { readInputs } from "../util/input";
 
-const input = readFileSync("input.txt").toString().split("\n");
-const testInput = readFileSync("test_input.txt").toString().split("\n");
+const [input, testInput] = readInputs(__dirname);
 
 type ValveParsed = {
   name: string;

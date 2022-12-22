@@ -1,9 +1,10 @@
 import { writeFileSync } from "fs";
 import _ from "lodash";
-import { Coord, readInputs, sortAscEx, sortDesc, sortDescEx } from "../helpers";
-import { MyCircularIterator } from "../MyCircularIterator";
+import { Coord, sortAscEx, sortDesc, sortDescEx } from "../util/helpers";
+import { readInputs } from "../util/input";
+import { MyCircularIterator } from "../util/MyCircularIterator";
 
-const { input, testInput } = readInputs(17);
+const [input, testInput] = readInputs(__dirname);
 
 type Rock = {
   coords: Coord[];
@@ -60,7 +61,7 @@ const rocks = new MyCircularIterator(
   }
 );
 
-const func1 = (input: string[], rockCount: number, debug: boolean) => {
+const func1 = (input: string[], rockCount: number) => {
   let gusts = new MyCircularIterator<">" | "<">(
     ...(input[0].split("") as (">" | "<")[])
   );
@@ -92,16 +93,10 @@ const func1 = (input: string[], rockCount: number, debug: boolean) => {
       ])
     );
 
-    // if (highestY === 5960) {
-    //   console.log(rocksDropped, "printing map");
-    //   printMap(occupied, highestY);
-    // }
     toPrint.push(`${rocksDropped}\t${highestY}`);
   }
 
   printStat(toPrint);
-
-  // printMap(occupied, highestY);
 
   return [...occupied.keys()].sort(sortDesc)[0];
 };
@@ -323,4 +318,4 @@ function printStat(toPrint: string[]) {
   writeFileSync("out_stat.txt", toPrint.join("\n"));
 }
 
-console.log(func1(input, 10000, false));
+console.log(func1(input, 10000));

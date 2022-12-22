@@ -4,7 +4,7 @@ import {
   readInputs,
   subtractNumbers,
   sumNumbers,
-} from "../helpers";
+} from "../util/helpers";
 
 const [input, testInput] = readInputs(__dirname);
 

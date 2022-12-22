@@ -3,22 +3,22 @@ import {
   maxReduce,
   multiplyNumbers,
   Quartet,
-  readInputs,
   simpleParseInt,
-} from "../helpers";
+} from "../util/helpers";
+import { readInputs } from "../util/input";
 
-const { input, testInput } = readInputs(__dirname);
+const [input, testInput] = readInputs(__dirname);
 
 const ORE = 0;
 const CLAY = 1;
 const OBSIDIAN = 2;
 const GEODE = 3;
 
-type Blueprint = Quartet<Quartet<number>>;
+type Blueprint = Quartet<Quartet>;
 
 type State = {
-  resources: Quartet<number>;
-  robots: Quartet<number>;
+  resources: Quartet;
+  robots: Quartet;
   minute: number;
 };
 
@@ -43,7 +43,7 @@ const parseBlueprints = (rows: string[]): Blueprint[] => {
       [parseInt(clayRobotCost), 0, 0, 0],
       [...obsidianRobotCosts.split(" ore and ").map(simpleParseInt), 0, 0],
       [geodeRobotCosts[0], 0, geodeRobotCosts[1], 0],
-    ] as Quartet<Quartet<number>>;
+    ] as Blueprint;
   });
 };
 
@@ -111,7 +111,7 @@ const mostCollectable = (blueprint: Blueprint, timeLeft: number) => {
 const createNewState = (
   oldState: State,
   robotType: number,
-  robotCosts: Quartet<number>,
+  robotCosts: Quartet,
   maxTime: number
 ) => {
   const newState = _.cloneDeep(oldState);

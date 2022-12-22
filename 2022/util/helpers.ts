@@ -1,10 +1,9 @@
-import { readFileSync } from "fs";
 import _ from "lodash";
 
 export type Coord = { x: number; y: number };
-export type Tuple<T> = [x: T, y: T];
-export type Triplet<T> = [x: T, y: T, z: T];
-export type Quartet<T> = [x: T, y: T, z: T, a: T];
+export type Tuple<T = number> = [x: T, y: T];
+export type Triplet<T = number> = [x: T, y: T, z: T];
+export type Quartet<T = number> = [x: T, y: T, z: T, a: T];
 export type ObjectValues<T> = T[keyof T];
 
 export const uniqueFilter = <T>(value: T, index: number, self: T[]) => {
@@ -15,29 +14,6 @@ export const uniqueByFilter =
   <T, E>(keyExtractor: (obj: T) => E) =>
   (value: T, index: number, self: T[]) =>
     self.findIndex((s) => keyExtractor(s) === keyExtractor(value))! === index;
-
-export const readInputs = (dirName: string): [string[], string[]] => {
-  const input = readFileSync(`${dirName}/input.txt`)
-    .toString()
-    .split("\n")
-    .map((row) =>
-      row
-        .split("")
-        .filter((c) => c != "\r")
-        .join("")
-    );
-  const testInput = readFileSync(`${dirName}/test_input.txt`)
-    .toString()
-    .split("\n")
-    .map((row) =>
-      row
-        .split("")
-        .filter((c) => c != "\r")
-        .join("")
-    );
-
-  return [input, testInput];
-};
 
 export const bfs = <Field>(
   from: Field,
