@@ -1,5 +1,5 @@
 import {
-  Direction2D,
+  Direction2DOrthogonal,
   Direction2DShort,
   DOWN,
   getField2D,
@@ -10,7 +10,7 @@ import {
   parseShortDirection2D,
   RIGHT,
   Turn2D,
-  turnDirection2D,
+  turnDirection2DOrthogonal,
   UP,
 } from "../util/2d";
 import { minReduce, simpleParseInt } from "../util/helpers";
@@ -29,8 +29,8 @@ type Instruction = Turn2D | number;
 type WrappingFunction = (
   map: Map2D<Field>,
   currSpot: Tuple,
-  currDir: Direction2D
-) => { fieldOnNewSpot: Field; newSpot: Tuple; newDir: Direction2D };
+  currDir: Direction2DOrthogonal
+) => { fieldOnNewSpot: Field; newSpot: Tuple; newDir: Direction2DOrthogonal };
 
 const parseInput = (input: string[]) => {
   const map: Map2D<Field> = new Map();
@@ -73,7 +73,7 @@ const parseInput = (input: string[]) => {
 const wrapAround: WrappingFunction = (
   map: Map2D<Field>,
   currSpot: Tuple,
-  currDir: Direction2D
+  currDir: Direction2DOrthogonal
 ) => {
   const [offsetX, offsetY] = offset2D[opposite2D[currDir]];
 
@@ -98,10 +98,10 @@ const wrapAround: WrappingFunction = (
 const wrapAroundCube: WrappingFunction = (
   map: Map2D<Field>,
   [previousSpotX, previousSpotY]: Tuple,
-  direction: Direction2D
-): { fieldOnNewSpot: Field; newSpot: Tuple<number>; newDir: Direction2D } => {
+  direction: Direction2DOrthogonal
+): { fieldOnNewSpot: Field; newSpot: Tuple<number>; newDir: Direction2DOrthogonal } => {
   let newSpot: Tuple;
-  let newDir: Direction2D;
+  let newDir: Direction2DOrthogonal;
 
   switch (direction) {
     case UP:
@@ -188,7 +188,7 @@ const traverse = (
   instructions: Instruction[],
   wrapAround: WrappingFunction
 ): Triplet => {
-  let currDir: Direction2D = RIGHT;
+  let currDir: Direction2DOrthogonal = RIGHT;
   let currSpot: Tuple = [[...map.get(0)!.keys()].reduce(minReduce), 0];
 
   instructions.forEach((instruction) => {
@@ -214,14 +214,14 @@ const traverse = (
         }
       }
     } else {
-      currDir = turnDirection2D[instruction][currDir];
+      currDir = turnDirection2DOrthogonal[instruction][currDir];
     }
   });
 
   return [...currSpot, mapDirectionToNumber(currDir)];
 };
 
-const mapDirectionToNumber = (dir: Direction2D) => {
+const mapDirectionToNumber = (dir: Direction2DOrthogonal) => {
   switch (dir) {
     case RIGHT:
       return 0;
