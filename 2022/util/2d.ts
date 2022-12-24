@@ -51,11 +51,9 @@ export const parseShortDirection2D: Record<Direction2DShort, Direction2DOrthogon
 export const getField2D = <T>(map: Map2D<T>, coords: Tuple) =>
   map.get(coords[Y])?.get(coords[X]);
 
-export const getNeighbour2D = <T>(map: Map2D<T>, [fieldX, fieldY]: Tuple, dir: Direction2D): [number, number, T | undefined] => {
+export const move2D = <T>([fieldX, fieldY]: Tuple, dir: Direction2D): Tuple => {
   const [offsetX, offsetY] = offset2D[dir];
-  const [neighbourX, neighbourY] = [fieldX + offsetX, fieldY + offsetY];
-
-  return [neighbourX, neighbourY, map.get(neighbourY)?.get(neighbourX)];
+  return [fieldX + offsetX, fieldY + offsetY];
 }
 
 export const turnDirection2DOrthogonal: Record<
