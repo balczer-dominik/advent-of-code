@@ -10,20 +10,23 @@ type Wind = {
   pos: Tuple;
 };
 
-const parseInput = (input: string[]) => {
-  const blizzards: Wind[] = [];
+const parseInput = (input: string[]): { blizzard: Wind[], mapSize: Tuple; } => {
+  const blizzard: Wind[] = [];
 
   input.forEach((row, y) => row.split("").forEach((field, x) => {
     switch (field) {
-      case ">": blizzards.push({ direction: RIGHT, pos: [x, y] }); break;
-      case "<": blizzards.push({ direction: LEFT, pos: [x, y] }); break;
-      case "^": blizzards.push({ direction: UP, pos: [x, y] }); break;
-      case "v": blizzards.push({ direction: DOWN, pos: [x, y] }); break;
+      case ">": blizzard.push({ direction: RIGHT, pos: [x, y] }); break;
+      case "<": blizzard.push({ direction: LEFT, pos: [x, y] }); break;
+      case "^": blizzard.push({ direction: UP, pos: [x, y] }); break;
+      case "v": blizzard.push({ direction: DOWN, pos: [x, y] }); break;
       default: break;
     }
   }));
 
-  return blizzards;
+  const mapSizeX = blizzard.map(b => b.pos[X]).reduce(maxReduce);
+  const mapSizeY = blizzard.map(b => b.pos[Y]).reduce(maxReduce);
+
+  return { blizzard, mapSize: [mapSizeX, mapSizeY] };
 };
 
 const isOutSideMap = ([posX, posY]: Tuple, [mapSizeX, mapSizeY]: Tuple) => {
@@ -93,28 +96,22 @@ const traverse = (blizzard: Wind[], goals: string[], mapSize: Tuple) => {
 };
 
 const func1 = (input: string[]) => {
-  let currBlizzard = parseInput(input);
+  let { blizzard, mapSize } = parseInput(input);
 
-  const mapSizeX = currBlizzard.map(b => b.pos[X]).reduce(maxReduce);
-  const mapSizeY = currBlizzard.map(b => b.pos[Y]).reduce(maxReduce);
-  const mapSize: Tuple = [mapSizeX, mapSizeY];
-  const end = [mapSizeX, mapSizeY + 1].join(",");
+  const end = [mapSize[X], mapSize[Y] + 1].join(",");
   const goals = [end];
 
-  return traverse(currBlizzard, goals, mapSize);
+  return traverse(blizzard, goals, mapSize);
 };
 
 const func2 = (input: string[]) => {
-  let currBlizzard = parseInput(input);
+  let { blizzard, mapSize } = parseInput(input);
 
-  const mapSizeX = currBlizzard.map(b => b.pos[X]).reduce(maxReduce);
-  const mapSizeY = currBlizzard.map(b => b.pos[Y]).reduce(maxReduce);
-  const mapSize: Tuple = [mapSizeX, mapSizeY];
-  const end = [mapSizeX, mapSizeY + 1].join(",");
   const start = [1, 0].join(",");
+  const end = [mapSize[X], mapSize[Y] + 1].join(",");
   const goals = [end, start, end];
 
-  return traverse(currBlizzard, goals, mapSize);
+  return traverse(blizzard, goals, mapSize);
 };
 
 console.log(1, func1(input));
