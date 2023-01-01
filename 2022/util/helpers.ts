@@ -2,14 +2,16 @@ import _ from "lodash";
 
 export type ObjectValues<T> = T[keyof T];
 
+export const reverseKeyValues = (obj: object) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k]));
+
 export const uniqueFilter = <T>(value: T, index: number, self: T[]) => {
   return self.indexOf(value) === index;
 };
 
 export const uniqueByFilter =
   <T, E>(keyExtractor: (obj: T) => E) =>
-  (value: T, index: number, self: T[]) =>
-    self.findIndex((s) => keyExtractor(s) === keyExtractor(value))! === index;
+    (value: T, index: number, self: T[]) =>
+      self.findIndex((s) => keyExtractor(s) === keyExtractor(value))! === index;
 
 export const bfs = <Field>(
   from: Field,
@@ -44,8 +46,8 @@ export const sortAsc = (a: number, b: number) => {
 
 export const sortAscEx =
   <T>(extractor: (item: T) => number) =>
-  (a: T, b: T) =>
-    extractor(a) - extractor(b);
+    (a: T, b: T) =>
+      extractor(a) - extractor(b);
 
 export const sortDesc = (a: number, b: number) => {
   return b - a;
@@ -53,8 +55,8 @@ export const sortDesc = (a: number, b: number) => {
 
 export const sortDescEx =
   <T>(extractor: (item: T) => number) =>
-  (a: T, b: T) =>
-    extractor(b) - extractor(a);
+    (a: T, b: T) =>
+      extractor(b) - extractor(a);
 
 export const sumNumbers = (a: number, b: number) => a + b;
 export const subtractNumbers = (a: number, b: number) => a - b;
