@@ -1,5 +1,5 @@
-import { simpleParseInt, sortAscEx, sortDescEx } from "../util/helpers";
-import { readInputs } from "../util/input";
+import { simpleParseInt, sortAscEx, sortDescEx } from "../../util/helpers";
+import { readInputs } from "../../util/input";
 
 const [input, testInput] = readInputs(__dirname);
 

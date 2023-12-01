@@ -12,11 +12,11 @@ import {
   Turn2D,
   turnDirection2DOrthogonal,
   UP,
-} from "../util/2d";
-import { minReduce, simpleParseInt } from "../util/helpers";
-import { readInputs } from "../util/input";
-import { abcMatcher, numericMatcher } from "../util/regex";
-import { Triplet, Tuple, X, Y } from "../util/Tuple";
+} from "../../util/2d";
+import { minReduce, simpleParseInt } from "../../util/helpers";
+import { readInputs } from "../../util/input";
+import { abcMatcher, numericMatcher } from "../../util/regex";
+import { Triplet, Tuple, X, Y } from "../../util/Tuple";
 
 const [input, testInput] = readInputs(__dirname);
 
@@ -99,7 +99,11 @@ const wrapAroundCube: WrappingFunction = (
   map: Map2D<Field>,
   [previousSpotX, previousSpotY]: Tuple,
   direction: Direction2DOrthogonal
-): { fieldOnNewSpot: Field; newSpot: Tuple<number>; newDir: Direction2DOrthogonal } => {
+): {
+  fieldOnNewSpot: Field;
+  newSpot: Tuple<number>;
+  newDir: Direction2DOrthogonal;
+} => {
   let newSpot: Tuple;
   let newDir: Direction2DOrthogonal;
 

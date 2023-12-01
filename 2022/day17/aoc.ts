@@ -1,8 +1,8 @@
 import { writeFileSync } from "fs";
 import _ from "lodash";
-import { CircularIterator } from "../util/CircularIterator";
-import { sortAscEx, sortDesc, sortDescEx } from "../util/helpers";
-import { readInputs } from "../util/input";
+import { CircularIterator } from "../../util/CircularIterator";
+import { sortAscEx, sortDesc, sortDescEx } from "../../util/helpers";
+import { readInputs } from "../../util/input";
 
 //Disclaimer: Part 1 was easy enough to solve with code, part 2 however was solved by generating a map where 10000 rocks were dropped and then the solution was calculated with pen and paper and the power of CTRL + F in the generated file.
 

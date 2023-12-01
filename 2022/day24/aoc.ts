@@ -1,7 +1,15 @@
-import { Direction2DOrthogonal, directions2DOrthogonal, DOWN, LEFT, move2D, RIGHT, UP } from "../util/2d";
-import { maxReduce, simpleParseInt } from "../util/helpers";
-import { readInputs } from "../util/input";
-import { Tuple, X, Y } from "../util/Tuple";
+import {
+  Direction2DOrthogonal,
+  directions2DOrthogonal,
+  DOWN,
+  LEFT,
+  move2D,
+  RIGHT,
+  UP,
+} from "../../util/2d";
+import { maxReduce, simpleParseInt } from "../../util/helpers";
+import { readInputs } from "../../util/input";
+import { Tuple, X, Y } from "../../util/Tuple";
 
 const [input, testInput] = readInputs(__dirname);
 
@@ -10,21 +18,32 @@ type Wind = {
   pos: Tuple;
 };
 
-const parseInput = (input: string[]): { blizzard: Wind[], mapSize: Tuple; } => {
+const parseInput = (input: string[]): { blizzard: Wind[]; mapSize: Tuple } => {
   const blizzard: Wind[] = [];
 
-  input.forEach((row, y) => row.split("").forEach((field, x) => {
-    switch (field) {
-      case ">": blizzard.push({ direction: RIGHT, pos: [x, y] }); break;
-      case "<": blizzard.push({ direction: LEFT, pos: [x, y] }); break;
-      case "^": blizzard.push({ direction: UP, pos: [x, y] }); break;
-      case "v": blizzard.push({ direction: DOWN, pos: [x, y] }); break;
-      default: break;
-    }
-  }));
+  input.forEach((row, y) =>
+    row.split("").forEach((field, x) => {
+      switch (field) {
+        case ">":
+          blizzard.push({ direction: RIGHT, pos: [x, y] });
+          break;
+        case "<":
+          blizzard.push({ direction: LEFT, pos: [x, y] });
+          break;
+        case "^":
+          blizzard.push({ direction: UP, pos: [x, y] });
+          break;
+        case "v":
+          blizzard.push({ direction: DOWN, pos: [x, y] });
+          break;
+        default:
+          break;
+      }
+    })
+  );
 
-  const mapSizeX = blizzard.map(b => b.pos[X]).reduce(maxReduce);
-  const mapSizeY = blizzard.map(b => b.pos[Y]).reduce(maxReduce);
+  const mapSizeX = blizzard.map((b) => b.pos[X]).reduce(maxReduce);
+  const mapSizeY = blizzard.map((b) => b.pos[Y]).reduce(maxReduce);
 
   return { blizzard, mapSize: [mapSizeX, mapSizeY] };
 };
@@ -65,18 +84,29 @@ const traverse = (blizzard: Wind[], goals: string[], mapSize: Tuple) => {
 
   while (!goals.isEmpty()) {
     minute++;
-    blizzard = blizzard.map(wind => moveWind(wind, mapSize));
+    blizzard = blizzard.map((wind) => moveWind(wind, mapSize));
 
     const nextReachable: Set<string> = new Set();
 
-    currReachable.forEach(reachable => {
+    currReachable.forEach((reachable) => {
       const [x, y] = reachable.split(",").map(simpleParseInt);
 
-      ([[x, y], ...directions2DOrthogonal.map(direction => move2D([x, y], direction))] as Tuple[]).forEach(newPos => {
+      (
+        [
+          [x, y],
+          ...directions2DOrthogonal.map((direction) =>
+            move2D([x, y], direction)
+          ),
+        ] as Tuple[]
+      ).forEach((newPos) => {
         if (isOutSideMap(newPos, mapSize)) {
           return;
         }
-        if (blizzard.some(wind => wind.pos[X] === newPos[X] && wind.pos[Y] === newPos[Y])) {
+        if (
+          blizzard.some(
+            (wind) => wind.pos[X] === newPos[X] && wind.pos[Y] === newPos[Y]
+          )
+        ) {
           return;
         }
 

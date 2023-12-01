@@ -1,11 +1,11 @@
-import { simpleParseInt, sortAsc, sortDesc } from "../util/helpers";
-import { readInputs } from "../util/input";
-import { Triplet } from "../util/Tuple";
+import { simpleParseInt, sortAsc, sortDesc } from "../../util/helpers";
+import { readInputs } from "../../util/input";
+import { Triplet } from "../../util/Tuple";
 
 const [input, testInput] = readInputs(__dirname);
 
 const sides = ["N", "E", "W", "S", "U", "D"] as const;
-type Side = typeof sides[number];
+type Side = (typeof sides)[number];
 
 const X = 0;
 const Y = 1;

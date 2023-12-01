@@ -1,6 +1,6 @@
 import _ from "lodash";
-import { simpleParseInt, sumNumbers } from "../util/helpers";
-import { readInputs } from "../util/input";
+import { simpleParseInt, sumNumbers } from "../../util/helpers";
+import { readInputs } from "../../util/input";
 
 const [input, testInput] = readInputs(__dirname);
 
