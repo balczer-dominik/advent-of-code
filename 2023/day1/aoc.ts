@@ -10,21 +10,18 @@ const parseInput = () => {
 
   return raw;
 };
+const parsed = parseInput();
 
-const func1 = () => {
-  const parsed = parseInput();
-
-  return parsed.reduce((acc, curr) => {
+export const func1 = () =>
+  parsed.reduce((acc, curr) => {
     const filtered = curr.split("").filter((char) => !isNaN(parseInt(char)));
+    console.log(filtered);
 
     return acc + parseInt(filtered[0] + filtered[filtered.length - 1]);
   }, 0);
-};
 
-const func2 = () => {
-  const parsed = parseInput();
-
-  return parsed.reduce((sum, row) => {
+export const func2 = () =>
+  parsed.reduce((sum, row) => {
     const firstDigit = chars.reduce(
       (winner, char) =>
         (row.indexOf(char) !== -1 && row.indexOf(char) < row.indexOf(winner)) || row.indexOf(winner) === -1 ? char : winner,
@@ -34,7 +31,3 @@ const func2 = () => {
 
     return sum + parseInt(`${(chars.indexOf(firstDigit) % 9) + 1}` + `${(chars.indexOf(secondDigit) % 9) + 1}`);
   }, 0);
-};
-
-console.log(1, func1());
-console.log(2, func2());

@@ -1,25 +1,19 @@
-import { readInputs } from "../util/input";
+import { readInputs } from "../../util/input";
 
 const [input, testInput] = readInputs(__dirname);
-const TEST = true;
+const TEST = false;
 
 const parseInput = () => {
   const raw = TEST ? testInput : input;
 
   return raw;
 };
+const parsed = parseInput();
 
-const func1 = () => {
-  const parsed = parseInput();
-
-  return parsed;
+export const func1 = () => {
+  return undefined;
 };
 
-const func2 = () => {
-  const parsed = parseInput();
-
-  return parsed;
+export const func2 = () => {
+  return undefined;
 };
-
-console.log(1, func1());
-console.log(2, func2());
