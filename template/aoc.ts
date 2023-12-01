@@ -1,4 +1,5 @@
 import { readInputs } from "../../util/input";
+import "../../util/helpers";
 
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;

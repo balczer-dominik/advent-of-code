@@ -1,4 +1,5 @@
 import { readInputs } from "../../util/input";
+import "../../util/helpers";
 
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
@@ -15,9 +16,8 @@ const parsed = parseInput();
 export const func1 = () =>
   parsed.reduce((acc, curr) => {
     const filtered = curr.split("").filter((char) => !isNaN(parseInt(char)));
-    console.log(filtered);
 
-    return acc + parseInt(filtered[0] + filtered[filtered.length - 1]);
+    return acc + parseInt(filtered[0] + filtered.last());
   }, 0);
 
 export const func2 = () =>

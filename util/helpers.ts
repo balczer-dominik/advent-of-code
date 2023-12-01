@@ -10,14 +10,10 @@ export const uniqueFilter = <T>(value: T, index: number, self: T[]) => {
 
 export const uniqueByFilter =
   <T, E>(keyExtractor: (obj: T) => E) =>
-    (value: T, index: number, self: T[]) =>
-      self.findIndex((s) => keyExtractor(s) === keyExtractor(value))! === index;
+  (value: T, index: number, self: T[]) =>
+    self.findIndex((s) => keyExtractor(s) === keyExtractor(value))! === index;
 
-export const bfs = <Field>(
-  from: Field,
-  to: Field,
-  neighborExtractor: (field: Field) => Field[]
-) => {
+export const bfs = <Field>(from: Field, to: Field, neighborExtractor: (field: Field) => Field[]) => {
   const queue: Field[][] = [];
   const visited: Field[] = [from];
   let curr: Field[] = [from];
@@ -46,8 +42,8 @@ export const sortAsc = (a: number, b: number) => {
 
 export const sortAscEx =
   <T>(extractor: (item: T) => number) =>
-    (a: T, b: T) =>
-      extractor(a) - extractor(b);
+  (a: T, b: T) =>
+    extractor(a) - extractor(b);
 
 export const sortDesc = (a: number, b: number) => {
   return b - a;
@@ -55,17 +51,15 @@ export const sortDesc = (a: number, b: number) => {
 
 export const sortDescEx =
   <T>(extractor: (item: T) => number) =>
-    (a: T, b: T) =>
-      extractor(b) - extractor(a);
+  (a: T, b: T) =>
+    extractor(b) - extractor(a);
 
 export const sumNumbers = (a: number, b: number) => a + b;
 export const subtractNumbers = (a: number, b: number) => a - b;
 export const multiplyNumbers = (a: number, b: number) => a * b;
 export const divideNumbers = (a: number, b: number) => a / b;
-export const maxReduce = (acc: number, curr: number) =>
-  acc > curr ? acc : curr;
-export const minReduce = (acc: number, curr: number) =>
-  acc < curr ? acc : curr;
+export const maxReduce = (acc: number, curr: number) => (acc > curr ? acc : curr);
+export const minReduce = (acc: number, curr: number) => (acc < curr ? acc : curr);
 
 declare global {
   interface Number {
@@ -76,10 +70,7 @@ declare global {
     isEmpty: () => boolean;
   }
 }
-Number.prototype.isBetween = function (
-  lowerBound: number,
-  upperBound: number
-): boolean {
+Number.prototype.isBetween = function (lowerBound: number, upperBound: number): boolean {
   return this > lowerBound && this < upperBound;
 };
 Array.prototype.last = function <T>(): T | undefined {
