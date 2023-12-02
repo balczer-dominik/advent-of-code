@@ -1,4 +1,4 @@
-# advent-of-code
+# Advent of Code powered by TypeScript
 
 Welcome, this repository contains all of my solutions for AoC.
 
