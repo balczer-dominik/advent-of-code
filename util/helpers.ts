@@ -69,6 +69,9 @@ declare global {
     last: () => T | undefined;
     isEmpty: () => boolean;
   }
+  interface String {
+    isNumber: () => boolean;
+  }
 }
 Number.prototype.isBetween = function (lowerBound: number, upperBound: number): boolean {
   return this > lowerBound && this < upperBound;
@@ -78,6 +81,9 @@ Array.prototype.last = function <T>(): T | undefined {
 };
 Array.prototype.isEmpty = function (): boolean {
   return this.length === 0;
+};
+String.prototype.isNumber = function (): boolean {
+  return !isNaN(parseInt(this.toString()));
 };
 
 export const simpleParseInt = (number: string) => parseInt(number);

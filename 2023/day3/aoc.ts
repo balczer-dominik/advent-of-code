@@ -11,13 +11,13 @@ const parseInput = () => {
 
   const split = raw.map((row) => row.split(""));
 
-  const schematic: Map2D<string | number> = new Map();
+  const schematic: Map2D<string> = new Map();
   split.forEach((_, y) => schematic.set(y, new Map()));
 
   split.forEach((row, y) =>
     row.forEach((symbol, x) => {
       if (symbol === ".") return;
-      schematic.get(y)!.set(x, isNaN(parseInt(symbol)) ? symbol : parseInt(symbol));
+      schematic.get(y)!.set(x, symbol);
     })
   );
 
@@ -30,7 +30,7 @@ const getNumbers = () =>
     let buffer: number[] = [];
 
     row.forEach((symbol, x) => {
-      if (typeof symbol === "string") return;
+      if (!symbol.isNumber()) return;
 
       if (!buffer.length || buffer.last() === x - 1) {
         buffer.push(x);
@@ -48,8 +48,7 @@ const buildNumber = (number: Tuple[]) => parseInt(number.map((coord) => getField
 export const func1 = () =>
   getNumbers().reduce(
     (acc, number) =>
-      acc +
-      (number.some((field) => getNeighbors(schematic, field).some((neighbor) => typeof neighbor === "string")) ? buildNumber(number) : 0),
+      acc + (number.some((field) => getNeighbors(schematic, field).some((neighbor) => !neighbor?.isNumber())) ? buildNumber(number) : 0),
     0
   );
 
