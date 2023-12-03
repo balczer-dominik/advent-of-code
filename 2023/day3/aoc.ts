@@ -63,11 +63,8 @@ export const func2 = () => {
     number.forEach((digitCoord) =>
       directions2D
         .map((direction) => move2D(digitCoord, direction))
-        .forEach((neighborCoord) => {
-          if (getField2D(schematic, neighborCoord) === "*") {
-            adjacentGears.add(`[${neighborCoord[X]},${neighborCoord[Y]}]`);
-          }
-        })
+        .filter((neighborCoord) => getField2D(schematic, neighborCoord) === "*")
+        .forEach((neighborCoord) => adjacentGears.add(`[${neighborCoord[X]},${neighborCoord[Y]}]`))
     );
 
     adjacentGears.forEach((gearCoord) => {
