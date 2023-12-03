@@ -25,44 +25,33 @@ const parseInput = () => {
 };
 const schematic = parseInput();
 
-const getNumbers = () => {
-  let candidates: Tuple[][] = [];
-
-  schematic.forEach((row, y) => {
+const getNumbers = () =>
+  [...schematic.values()].reduce((numberCoords: Tuple[][], row, y) => {
     let buffer: number[] = [];
-    let last: number;
+
     row.forEach((symbol, x) => {
       if (typeof symbol === "string") return;
 
-      if (last === undefined) {
+      if (!buffer.length || buffer.last() === x - 1) {
         buffer.push(x);
       } else {
-        if (last === x - 1) {
-          buffer.push(x);
-        } else {
-          candidates.push(buffer.map((x) => [x, y]));
-          buffer = [x];
-        }
+        numberCoords.push(buffer.map((x) => [x, y]));
+        buffer = [x];
       }
-      last = x;
     });
 
-    if (!buffer.isEmpty()) candidates.push(buffer.map((x) => [x, y]));
-  });
-
-  return candidates;
-};
+    return buffer.length ? [...numberCoords, buffer.map((x) => [x, y]) as Tuple[]] : numberCoords;
+  }, []);
 
 const buildNumber = (number: Tuple[]) => parseInt(number.map((coord) => getField2D(schematic, coord)!.toString()).join(""));
 
-export const func1 = () => {
-  const numbers = getNumbers();
-
-  return numbers.reduce((acc, number) => {
-    const isValid = number.some((field) => getNeighbors(schematic, field).some((neighbor) => typeof neighbor === "string"));
-    return acc + (isValid ? buildNumber(number) : 0);
-  }, 0);
-};
+export const func1 = () =>
+  getNumbers().reduce(
+    (acc, number) =>
+      acc +
+      (number.some((field) => getNeighbors(schematic, field).some((neighbor) => typeof neighbor === "string")) ? buildNumber(number) : 0),
+    0
+  );
 
 export const func2 = () => {
   const numbers = getNumbers();
