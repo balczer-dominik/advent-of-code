@@ -71,7 +71,7 @@ export const minReduce = (acc: number, curr: number) => (acc < curr ? acc : curr
 
 declare global {
   interface Number {
-    isBetween: (lowerBound: number, upperBound: number) => boolean;
+    isBetween: (lowerBound: number, upperBound: number, inclusive?: boolean) => boolean;
   }
   interface Array<T> {
     last: () => T | undefined;
@@ -82,8 +82,8 @@ declare global {
     isNumber: () => boolean;
   }
 }
-Number.prototype.isBetween = function (lowerBound: number, upperBound: number): boolean {
-  return this > lowerBound && this < upperBound;
+Number.prototype.isBetween = function (lowerBound: number, upperBound: number, inclusive: boolean = false): boolean {
+  return this.valueOf() > lowerBound + (inclusive ? -1 : 0) && this.valueOf() < upperBound + (inclusive ? +1 : 0);
 };
 Array.prototype.last = function <T>(): T | undefined {
   return this[this.length - 1];
