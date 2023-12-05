@@ -13,6 +13,14 @@ export const uniqueByFilter =
   (value: T, index: number, self: T[]) =>
     self.findIndex((s) => keyExtractor(s) === keyExtractor(value))! === index;
 
+export const rangesIntersect = ([fromA, toA]: [number, number], [fromB, toB]: [number, number]) => !(toA < fromB || fromA > toB);
+
+export const getIntersection = ([fromA, toA]: [number, number], [fromB, toB]: [number, number]) => {
+  const fromResult = Math.max(fromA, fromB);
+  const toResult = Math.min(toA, toB);
+  return fromResult > toResult ? null : [fromResult, toResult];
+};
+
 export const bfs = <Field>(from: Field, to: Field, neighborExtractor: (field: Field) => Field[]) => {
   const queue: Field[][] = [];
   const visited: Field[] = [from];
@@ -68,6 +76,7 @@ declare global {
   interface Array<T> {
     last: () => T | undefined;
     isEmpty: () => boolean;
+    partition: (groupLength: number) => Array<Array<T>>;
   }
   interface String {
     isNumber: () => boolean;
@@ -81,6 +90,9 @@ Array.prototype.last = function <T>(): T | undefined {
 };
 Array.prototype.isEmpty = function (): boolean {
   return this.length === 0;
+};
+Array.prototype.partition = function (groupLength: number) {
+  return this.length ? [this.splice(0, groupLength)].concat(this.partition(groupLength)) : [];
 };
 String.prototype.isNumber = function (): boolean {
   return !isNaN(parseInt(this.toString()));
