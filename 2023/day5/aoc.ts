@@ -3,41 +3,39 @@ import { getIntersection, minReduce, simpleParseInt, sortAscEx } from "../../uti
 import { Tuple } from "../../util/Tuple";
 
 const [input, testInput] = readInputs(__dirname);
-const TEST = false;
+const TEST = true;
 
-const parseInput = () => {
-  const [seedsRaw, _, ...restRaw] = TEST ? testInput : input;
+type Mapping = {
+  from: number;
+  to: number;
+  offset: number;
+};
 
-  const seeds = seedsRaw.split("seeds: ")[1].split(" ").map(simpleParseInt);
-  let maps = [];
-  let buffer = [];
+const [seedsRaw, _, ...restRaw] = TEST ? testInput : input;
 
-  for (const row of restRaw) {
-    if (row[0]?.isNumber()) {
+const seeds = seedsRaw.split("seeds: ")[1].split(" ").map(simpleParseInt);
+const maps = restRaw
+  .filter((row) => !row[0] || row[0].isNumber())
+  .reduce(
+    (maps, row) => {
+      if (!row[0]?.isNumber()) return [...maps, []];
+
       const [destinationStart, rangeStart, size] = row.split(" ");
-      buffer.push({
+      maps.last()!.push({
         from: parseInt(rangeStart),
         to: parseInt(rangeStart) + parseInt(size) - 1,
         offset: parseInt(destinationStart) - parseInt(rangeStart),
       });
-    } else {
-      if (buffer.length) maps.push(buffer);
-      buffer = [];
-    }
-  }
-
-  maps.push(buffer);
-
-  return { seeds, maps };
-};
-const { seeds, maps } = parseInput();
+      return maps;
+    },
+    [[]] as Mapping[][]
+  );
 
 export const func1 = () =>
   seeds
     .map((seed) =>
       maps.reduce(
-        (acc, map) =>
-          acc + map.filter((mapping) => acc.isBetween(mapping.from - 1, mapping.to + 1))?.map((mapping) => mapping.offset)[0] ?? 0,
+        (acc, map) => acc + (map.filter((mapping) => acc.isBetween(mapping.from - 1, mapping.to + 1)).map((map) => map.offset)[0] ?? 0),
         seed
       )
     )
@@ -49,6 +47,8 @@ export const func2 = () => {
 };
 
 const intersectWithMap = (ranges: Tuple[], [currentMap, ...restMaps]: typeof maps): Tuple[] => {
+  if (!currentMap) return ranges;
+
   const newRanges = ranges.flatMap((range) => {
     const intersections = currentMap
       .map(({ from, to, offset }) => ({ range: getIntersection(range, [from, to]), offset }))
@@ -78,6 +78,5 @@ const intersectWithMap = (ranges: Tuple[], [currentMap, ...restMaps]: typeof map
     return [...nonIntersectingRanges, ...intersections.map(({ range, offset }) => [range![0] + offset, range![1] + offset])] as Tuple[];
   });
 
-  if (restMaps.length) return intersectWithMap(newRanges, restMaps);
-  return newRanges;
+  return intersectWithMap(newRanges, restMaps);
 };
