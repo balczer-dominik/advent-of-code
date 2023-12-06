@@ -17,10 +17,7 @@ const [times, distances] = raw.map((row) =>
 export const func1 = () => times.map((time, i) => getWinningPossibilities(time, distances[i])).reduce(multiplyNumbers);
 export const func2 = () => getWinningPossibilities(parseInt(times.join("")), parseInt(distances.join("")));
 
-const getWinningPossibilities = (time: number, distance: number) => {
-  return (
-    _.rangeRight(0, time).find((charge) => charge * (time - charge) > distance)! -
-    _.range(0, time).find((charge) => charge * (time - charge) > distance)! +
-    1
-  );
-};
+const getWinningPossibilities = (time: number, distance: number) =>
+  _.rangeRight(0, time).find((charge) => charge * (time - charge) > distance)! -
+  _.range(0, time).find((charge) => charge * (time - charge) > distance)! +
+  1;
