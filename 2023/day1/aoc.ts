@@ -15,8 +15,7 @@ const parsed = parseInput();
 
 export const func1 = () =>
   parsed.reduce((acc, curr) => {
-    const filtered = curr.split("").filter((char) => !isNaN(parseInt(char)));
-
+    const filtered = curr.split("").filter((char) => char.isNumber());
     return acc + parseInt(filtered[0] + filtered.last());
   }, 0);
 
