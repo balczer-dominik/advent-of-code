@@ -21,7 +21,6 @@ const upgrade = (value: string) => {
     case "5":
     case "4":
       return "5";
-    case "FH":
     case "3":
       return "4";
     case "2x2":
