@@ -3,14 +3,14 @@ import { readInputs } from "../../util/input";
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
 
-const cardStrengths = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"];
-const cardStrengths2 = ["J", "2", "3", "4", "5", "6", "7", "8", "9", "T", "Q", "K", "A"];
+const cardStrengths = "23456789TJQKA";
+const cardStrengths2 = "J23456789TQKA";
 const combos = ["HIGH", "1x2", "2x2", "3", "FH", "4", "5"];
 
 const raw = TEST ? testInput : input;
 const games = raw.map((game) => game.split(" "));
 
-const getHighCard = (handA: string, handB: string, cardStrengths: string[]) => {
+const getHighCard = (handA: string, handB: string, cardStrengths: string) => {
   for (let cardIdx = 0; cardIdx < handA.length; cardIdx++)
     if (handA[cardIdx] !== handB[cardIdx]) return cardStrengths.indexOf(handA[cardIdx]) - cardStrengths.indexOf(handB[cardIdx]);
   return 0;
@@ -50,7 +50,7 @@ const getHandValue = (hand: string) => {
   return "HIGH";
 };
 
-const sortPlayers = ([handA, _A, valueA]: string[], [handB, _B, valueB]: string[], cardStrengths: string[]) =>
+const sortPlayers = ([handA, _A, valueA]: string[], [handB, _B, valueB]: string[], cardStrengths: string) =>
   combos.indexOf(valueA) - combos.indexOf(valueB)
     ? combos.indexOf(valueA) - combos.indexOf(valueB)
     : getHighCard(handA, handB, cardStrengths);
