@@ -72,6 +72,8 @@ export const minReduce = (acc: number, curr: number) => (acc < curr ? acc : curr
 declare global {
   interface Number {
     isBetween: (lowerBound: number, upperBound: number, inclusive?: boolean) => boolean;
+    gcd: (otherNumber: number) => number;
+    lcm: (otherNumber: number) => number;
   }
   interface Array<T> {
     last: () => T | undefined;
@@ -80,11 +82,26 @@ declare global {
   }
   interface String {
     isNumber: () => boolean;
+    toNumber: () => number;
   }
 }
+
 Number.prototype.isBetween = function (lowerBound: number, upperBound: number, inclusive: boolean = false): boolean {
   return this.valueOf() > lowerBound + (inclusive ? -1 : 0) && this.valueOf() < upperBound + (inclusive ? +1 : 0);
 };
+Number.prototype.gcd = function (otherNumber: number) {
+  let result = this.valueOf();
+  for (let temp = otherNumber; otherNumber !== 0; ) {
+    otherNumber = result % otherNumber;
+    result = temp;
+    temp = otherNumber;
+  }
+  return result;
+};
+Number.prototype.lcm = function (otherNumber: number) {
+  return (this.valueOf() * otherNumber) / this.gcd(otherNumber);
+};
+
 Array.prototype.last = function <T>(): T | undefined {
   return this[this.length - 1];
 };
@@ -94,8 +111,12 @@ Array.prototype.isEmpty = function (): boolean {
 Array.prototype.partition = function (groupLength: number) {
   return this.length ? [this.splice(0, groupLength)].concat(this.partition(groupLength)) : [];
 };
+
 String.prototype.isNumber = function (): boolean {
   return !isNaN(parseInt(this.toString()));
+};
+String.prototype.toNumber = function () {
+  return parseInt(this.valueOf());
 };
 
 export const simpleParseInt = (number: string) => parseInt(number);
