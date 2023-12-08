@@ -79,6 +79,12 @@ declare global {
     last: () => T | undefined;
     isEmpty: () => boolean;
     partition: (groupLength: number) => Array<Array<T>>;
+    sum: (mapper?: (el: T) => number) => number;
+    product: (mapper?: (el: T) => number) => number;
+    lcm: (mapper?: (el: T) => number) => number;
+    gcd: (mapper?: (el: T) => number) => number;
+    min: (mapper?: (el: T) => number) => number;
+    max: (mapper?: (el: T) => number) => number;
   }
   interface String {
     isNumber: () => boolean;
@@ -110,6 +116,30 @@ Array.prototype.isEmpty = function (): boolean {
 };
 Array.prototype.partition = function (groupLength: number) {
   return this.length ? [this.splice(0, groupLength)].concat(this.partition(groupLength)) : [];
+};
+Array.prototype.sum = function <T>(mapper: (el: T) => number = (el) => el as number) {
+  return this.reduce((acc, num) => mapper(num) + acc, 0);
+};
+Array.prototype.product = function <T>(mapper: (el: T) => number = (el) => el as number) {
+  return this.reduce((acc, num) => mapper(num) * acc, 1);
+};
+Array.prototype.lcm = function <T>(mapper: (el: T) => number = (el) => el as number) {
+  return this.reduce((acc, num) => mapper(num).lcm(acc), 1);
+};
+Array.prototype.gcd = function <T>(mapper: (el: T) => number = (el) => el as number) {
+  return this.reduce((acc, num) => mapper(num).gcd(acc), 1);
+};
+Array.prototype.min = function <T>(mapper: (el: T) => number = (el) => el as number) {
+  return this.reduce((acc, curr) => {
+    const value = mapper(curr);
+    return value < acc ? value : acc;
+  }, mapper(this[0]));
+};
+Array.prototype.max = function <T>(mapper: (el: T) => number = (el) => el as number) {
+  return this.reduce((acc, curr) => {
+    const value = mapper(curr);
+    return value > acc ? value : acc;
+  }, mapper(this[0]));
 };
 
 String.prototype.isNumber = function (): boolean {

@@ -1,5 +1,5 @@
 import { readInputs } from "../../util/input";
-import { maxReduce, sumNumbers } from "../../util/helpers";
+import "../../util/helpers";
 
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
@@ -10,7 +10,7 @@ const games = raw.map((gameRaw) => {
   const [roundId, setsRaw] = gameRaw.split(": ");
 
   return {
-    roundId: parseInt(roundId.split("Game ")[1]),
+    roundId: roundId.split("Game ")[1].toNumber(),
     sets: setsRaw.split("; ").map((set) => {
       const setParsed = set.split(", ").map((cubes) => {
         const [quantity, color] = cubes.split(" ");
@@ -18,9 +18,9 @@ const games = raw.map((gameRaw) => {
       });
 
       return {
-        red: parseInt(setParsed.filter((cube) => cube.color === "red")[0]?.quantity ?? 0),
-        green: parseInt(setParsed.filter((cube) => cube.color === "green")[0]?.quantity ?? 0),
-        blue: parseInt(setParsed.filter((cube) => cube.color === "blue")[0]?.quantity ?? 0),
+        red: setParsed.filter((cube) => cube.color === "red")[0]?.quantity?.toNumber() ?? 0,
+        green: setParsed.filter((cube) => cube.color === "green")[0]?.quantity?.toNumber() ?? 0,
+        blue: setParsed.filter((cube) => cube.color === "blue")[0]?.quantity?.toNumber() ?? 0,
       };
     }),
   };
@@ -35,15 +35,6 @@ const max = {
 export const func1 = () =>
   games
     .filter((round) => round.sets.every((set) => set.blue <= max.blue && set.green <= max.green && set.red <= max.red))
-    .map((round) => round.roundId)
-    .reduce(sumNumbers);
+    .sum((round) => round.roundId);
 
-export const func2 = () =>
-  games.reduce(
-    (acc, curr) =>
-      acc +
-      curr.sets.map((set) => set.red).reduce(maxReduce) *
-        curr.sets.map((set) => set.green).reduce(maxReduce) *
-        curr.sets.map((set) => set.blue).reduce(maxReduce),
-    0
-  );
+export const func2 = () => games.sum(({ sets }) => sets.max((set) => set.red) * sets.max((set) => set.green) * sets.max((set) => set.blue));

@@ -10,7 +10,7 @@ const cards = raw.map((row) => {
   const [cardIdRaw, numbersRaw] = row.split(":");
   const [winningNumbersRaw, myNumbersRaw] = numbersRaw.split("|");
   return {
-    cardId: parseInt(cardIdRaw.split("Card")[1].trim()),
+    cardId: cardIdRaw.split("Card")[1].trim().toNumber(),
     winningNumbers: winningNumbersRaw
       .split(" ")
       .filter((x) => x !== "")
@@ -46,5 +46,5 @@ export const func2 = () => {
       .forEach((cardId) => resultCards.set(cardId, resultCards.get(cardId)! + resultCards.get(card.cardId)!));
   });
 
-  return [...resultCards.values()].reduce(sumNumbers);
+  return [...resultCards.values()].sum();
 };

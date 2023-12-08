@@ -6,24 +6,19 @@ import { Tuple, X, Y } from "../../util/Tuple";
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
 
-const parseInput = () => {
-  const raw = TEST ? testInput : input;
+const raw = TEST ? testInput : input;
 
-  const split = raw.map((row) => row.split(""));
+const split = raw.map((row) => row.split(""));
 
-  const schematic: Map2D<string> = new Map();
-  split.forEach((_, y) => schematic.set(y, new Map()));
+const schematic: Map2D<string> = new Map();
+split.forEach((_, y) => schematic.set(y, new Map()));
 
-  split.forEach((row, y) =>
-    row.forEach((symbol, x) => {
-      if (symbol === ".") return;
-      schematic.get(y)!.set(x, symbol);
-    })
-  );
-
-  return schematic;
-};
-const schematic = parseInput();
+split.forEach((row, y) =>
+  row.forEach((symbol, x) => {
+    if (symbol === ".") return;
+    schematic.get(y)!.set(x, symbol);
+  })
+);
 
 const getNumbers = () =>
   [...schematic.values()].reduce((numberCoords: Tuple[][], row, y) => {
@@ -43,7 +38,11 @@ const getNumbers = () =>
     return buffer.length ? [...numberCoords, buffer.map((x) => [x, y]) as Tuple[]] : numberCoords;
   }, []);
 
-const buildNumber = (number: Tuple[]) => parseInt(number.map((coord) => getField2D(schematic, coord)!.toString()).join(""));
+const buildNumber = (number: Tuple[]) =>
+  number
+    .map((coord) => getField2D(schematic, coord)!.toString())
+    .join("")
+    .toNumber();
 
 export const func1 = () =>
   getNumbers().reduce(
@@ -72,5 +71,5 @@ export const func2 = () => {
     });
   });
 
-  return [...gearCandidates.values()].reduce((result, gear) => (result += gear.length === 2 ? gear[0] * gear[1] : 0), 0);
+  return [...gearCandidates.values()].sum((gear) => (gear.length === 2 ? gear[0] * gear[1] : 0));
 };

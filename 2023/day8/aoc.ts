@@ -21,4 +21,4 @@ export const func1 = () => getLoopLength("AAA");
 export const func2 = () =>
   Object.keys(nodes)
     .filter((node) => node[2] === "A")
-    .reduce((sum, start) => sum.lcm(getLoopLength(start)), 1);
+    .lcm(getLoopLength);

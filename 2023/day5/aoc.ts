@@ -32,11 +32,9 @@ const maps = restRaw
   );
 
 export const func1 = () =>
-  seeds
-    .map((seed) =>
-      maps.reduce((acc, map) => acc + (map.filter(({ from, to }) => acc.isBetween(from, to, true)).map((map) => map.offset)[0] ?? 0), seed)
-    )
-    .reduce(minReduce);
+  seeds.min((seed) =>
+    maps.reduce((acc, map) => acc + (map.filter(({ from, to }) => acc.isBetween(from, to, true)).map((map) => map.offset)[0] ?? 0), seed)
+  );
 
 export const func2 = () =>
   maps
@@ -71,4 +69,4 @@ export const func2 = () =>
       seeds.partition(2).map(([start, size]) => [start, start + size - 1]) as Tuple[]
     )
     .flat()
-    .reduce(minReduce);
+    .min();
