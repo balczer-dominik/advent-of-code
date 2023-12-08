@@ -85,6 +85,8 @@ declare global {
     gcd: (mapper?: (el: T) => number) => number;
     min: (mapper?: (el: T) => number) => number;
     max: (mapper?: (el: T) => number) => number;
+    distinct: (mapper?: (el: T) => any) => Array<T>;
+    toObject: <U>(keyMapper: (el: T) => string | number, valueMapper: (el: T) => U) => { [key: string]: U };
   }
   interface String {
     isNumber: () => boolean;
@@ -140,6 +142,12 @@ Array.prototype.max = function <T>(mapper: (el: T) => number = (el) => el as num
     const value = mapper(curr);
     return value > acc ? value : acc;
   }, mapper(this[0]));
+};
+Array.prototype.distinct = function <T>(mapper: (el: T) => any = (el) => el) {
+  return this.filter(uniqueByFilter(mapper));
+};
+Array.prototype.toObject = function <T, U>(keyMapper: (el: T) => string | number, valueMapper: (el: T) => U) {
+  return this.reduce((obj, el) => ({ ...obj, [keyMapper(el)]: valueMapper(el) }), {});
 };
 
 String.prototype.isNumber = function (): boolean {
