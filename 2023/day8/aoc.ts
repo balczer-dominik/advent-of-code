@@ -12,10 +12,7 @@ const nodes = nodesRaw.reduce(
 
 const getLoopLength = (node: string) => {
   let traversed = 0;
-  while (node[2] !== "Z") {
-    node = nodes[node][instructions[traversed % instructions.length]];
-    traversed++;
-  }
+  for (; node[2] !== "Z"; traversed++) node = nodes[node][instructions[traversed % instructions.length]];
   return traversed;
 };
 
