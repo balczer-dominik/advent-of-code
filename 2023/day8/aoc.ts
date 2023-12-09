@@ -5,14 +5,14 @@ const [input, testInput] = readInputs(__dirname);
 const TEST = false;
 
 const [instructions, _, ...nodesRaw] = TEST ? testInput : input;
-const nodes = nodesRaw.reduce(
-  (acc, node) => ({ ...acc, [node.substring(0, 3)]: { L: node.substring(7, 10), R: node.substring(12, 15) } }),
-  {} as { [key: string]: { [key: string]: string } }
+const nodes = nodesRaw.toObject(
+  (node) => node.substring(0, 3),
+  (node) => ({ L: node.substring(7, 10), R: node.substring(12, 15) })
 );
 
 const getLoopLength = (node: string) => {
   let traversed = 0;
-  for (; node[2] !== "Z"; traversed++) node = nodes[node][instructions[traversed % instructions.length]];
+  for (; node[2] !== "Z"; traversed++) node = nodes[node][instructions[traversed % instructions.length] as "L" | "R"];
   return traversed;
 };
 
