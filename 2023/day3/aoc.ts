@@ -45,10 +45,8 @@ const buildNumber = (number: Tuple[]) =>
     .toNumber();
 
 export const func1 = () =>
-  getNumbers().reduce(
-    (acc, number) =>
-      acc + (number.some((field) => getNeighbors(schematic, field).some((neighbor) => !neighbor?.isNumber())) ? buildNumber(number) : 0),
-    0
+  getNumbers().sum((number) =>
+    number.some((field) => getNeighbors(schematic, field).some((neighbor) => !neighbor?.isNumber())) ? buildNumber(number) : 0
   );
 
 export const func2 = () => {
