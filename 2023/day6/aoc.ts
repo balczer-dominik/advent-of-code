@@ -1,5 +1,5 @@
 import { readInputs } from "../../util/input";
-import { multiplyNumbers, simpleParseInt } from "../../util/helpers";
+import "../../util/helpers";
 import _ from "lodash";
 
 const [input, testInput] = readInputs(__dirname);
@@ -7,12 +7,7 @@ const TEST = false;
 
 const raw = TEST ? testInput : input;
 
-const [times, distances] = raw.map((row) =>
-  row
-    .split(" ")
-    .filter((x) => x[0]?.isNumber())
-    .map(simpleParseInt)
-);
+const [times, distances] = raw.map((row) => row.numberSequence());
 
 export const func1 = () => times.map((time, i) => getWinningPossibilities(time, distances[i])).product();
 export const func2 = () => getWinningPossibilities(times.join("").toNumber(), distances.join("").toNumber());

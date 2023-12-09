@@ -1,5 +1,5 @@
 import { readInputs } from "../../util/input";
-import { getIntersection, minReduce, simpleParseInt, sortAscEx } from "../../util/helpers";
+import { getIntersection, sortAscEx } from "../../util/helpers";
 import { Tuple } from "../../util/Tuple";
 
 const [input, testInput] = readInputs(__dirname);
@@ -13,7 +13,7 @@ type Mapping = {
 
 const [seedsRaw, _, ...restRaw] = TEST ? testInput : input;
 
-const seeds = seedsRaw.split("seeds: ")[1].split(" ").map(simpleParseInt);
+const seeds = seedsRaw.split("seeds: ")[1].numberSequence();
 const maps = restRaw
   .filter((row) => !row[0] || row[0].isNumber())
   .reduce(

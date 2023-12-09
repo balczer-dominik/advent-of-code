@@ -1,5 +1,5 @@
 import { readInputs } from "../../util/input";
-import { simpleParseInt } from "../../util/helpers";
+import "../../util/helpers";
 
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
@@ -11,14 +11,8 @@ const cards = raw.map((row) => {
   const [winningNumbersRaw, myNumbersRaw] = numbersRaw.split("|");
   return {
     cardId: cardIdRaw.split("Card")[1].trim().toNumber(),
-    winningNumbers: winningNumbersRaw
-      .split(" ")
-      .filter((x) => x !== "")
-      .map(simpleParseInt),
-    myNumbers: myNumbersRaw
-      .split(" ")
-      .filter((x) => x !== "")
-      .map(simpleParseInt),
+    winningNumbers: winningNumbersRaw.numberSequence(),
+    myNumbers: myNumbersRaw.numberSequence(),
   };
 });
 

@@ -159,7 +159,7 @@ String.prototype.toNumber = function () {
 };
 String.prototype.numberSequence = function () {
   return this.split(" ")
-    .filter((s) => s !== "")
+    .filter((s) => s !== "" && s.isNumber())
     .map(simpleParseInt);
 };
 
