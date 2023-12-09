@@ -91,6 +91,7 @@ declare global {
   interface String {
     isNumber: () => boolean;
     toNumber: () => number;
+    numberSequence: () => number[];
   }
 }
 
@@ -155,6 +156,11 @@ String.prototype.isNumber = function (): boolean {
 };
 String.prototype.toNumber = function () {
   return parseInt(this.valueOf());
+};
+String.prototype.numberSequence = function () {
+  return this.split(" ")
+    .filter((s) => s !== "")
+    .map(simpleParseInt);
 };
 
 export const simpleParseInt = (number: string) => parseInt(number);
