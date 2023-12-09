@@ -1,5 +1,5 @@
 import { readInputs } from "../../util/input";
-import { simpleParseInt, sortDesc, sumNumbers } from "../../util/helpers";
+import { sortDesc, sumNumbers } from "../../util/helpers";
 
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
