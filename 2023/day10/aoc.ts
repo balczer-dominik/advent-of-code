@@ -55,13 +55,7 @@ export const func1 = () => getLoop().length / 2;
 
 export const func2 = () => {
   const loop = getLoop();
-  const sum1 = loop
-    .slice(0, -1)
-    .map(([x], i) => x * loop[i + 1][Y])
-    .sum();
-  const sum2 = loop
-    .slice(1)
-    .map(([x], i) => x * loop[i][Y])
-    .sum();
+  const sum1 = loop.slice(0, -1).sum(([x], i) => x * loop[i + 1][Y]);
+  const sum2 = loop.slice(1).sum(([x], i) => x * loop[i][Y]);
   return Math.abs(sum1 + loop.last()![X] * loop[0][Y] - sum2 - loop.last()![Y] * loop[0][X]) / 2 - loop.length / 2 + 1;
 };

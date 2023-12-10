@@ -8,32 +8,23 @@ const TEST = false;
 
 const raw = TEST ? testInput : input;
 
-const split = raw.map((row) => row.split(""));
-
 const schematic: Map2D<string> = new Map();
-split.forEach((_, y) => schematic.set(y, new Map()));
-
-split.forEach((row, y) =>
-  row.forEach((symbol, x) => {
+raw.map((row, y) => {
+  const yMap = schematic.set(y, new Map()).get(y)!;
+  row.split("").forEach((symbol, x) => {
     if (symbol === ".") return;
-    schematic.get(y)!.set(x, symbol);
-  })
-);
+    yMap.set(x, symbol);
+  });
+});
 
 const getNumbers = () =>
   [...schematic.values()].reduce((numberCoords: Tuple[][], row, y) => {
-    let buffer: number[] = [];
-
-    row.forEach((symbol, x) => {
-      if (!symbol.isNumber()) return;
-
-      if (!buffer.length || buffer.last() === x - 1) {
-        buffer.push(x);
-      } else {
-        numberCoords.push(buffer.map((x) => [x, y]));
-        buffer = [x];
-      }
-    });
+    const buffer = [...row.entries()].reduce((acc: number[], [x, symbol]) => {
+      if (!symbol.isNumber()) return acc;
+      if (!acc.length || acc.last() === x - 1) return [...acc, x];
+      numberCoords.push(acc.map((x) => [x, y]));
+      return [x];
+    }, []);
 
     return buffer.length ? [...numberCoords, buffer.map((x) => [x, y]) as Tuple[]] : numberCoords;
   }, []);
@@ -50,11 +41,9 @@ export const func1 = () =>
   );
 
 export const func2 = () => {
-  const numbers = getNumbers();
-
   const gearCandidates: Map<string, number[]> = new Map();
 
-  numbers.forEach((number) => {
+  getNumbers().forEach((number) => {
     const adjacentGears: Set<string> = new Set();
 
     number.forEach((digitCoord) =>

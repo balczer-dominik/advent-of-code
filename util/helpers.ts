@@ -79,14 +79,14 @@ declare global {
     last: () => T | undefined;
     isEmpty: () => boolean;
     partition: (groupLength: number) => Array<Array<T>>;
-    sum: (mapper?: (el: T) => number) => number;
-    product: (mapper?: (el: T) => number) => number;
-    lcm: (mapper?: (el: T) => number) => number;
-    gcd: (mapper?: (el: T) => number) => number;
-    min: (mapper?: (el: T) => number) => number;
-    max: (mapper?: (el: T) => number) => number;
+    sum: (mapper?: (el: T, idx: number) => number) => number;
+    product: (mapper?: (el: T, idx: number) => number) => number;
+    lcm: (mapper?: (el: T, idx: number) => number) => number;
+    gcd: (mapper?: (el: T, idx: number) => number) => number;
+    min: (mapper?: (el: T, idx: number) => number) => number;
+    max: (mapper?: (el: T, idx: number) => number) => number;
     distinct: (mapper?: (el: T) => any) => Array<T>;
-    toObject: <U>(keyMapper: (el: T) => string | number, valueMapper: (el: T) => U) => { [key: string]: U };
+    toObject: <U>(keyMapper: (el: T, idx: number) => string | number, valueMapper: (el: T, idx: number) => U) => { [key: string]: U };
   }
   interface String {
     isNumber: () => boolean;
@@ -120,35 +120,33 @@ Array.prototype.isEmpty = function (): boolean {
 Array.prototype.partition = function (groupLength: number) {
   return this.length ? [this.splice(0, groupLength)].concat(this.partition(groupLength)) : [];
 };
-Array.prototype.sum = function <T>(mapper: (el: T) => number = (el) => el as number) {
-  return this.reduce((acc, num) => mapper(num) + acc, 0);
+Array.prototype.sum = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
+  return this.map(mapper).reduce((acc, num) => num + acc, 0);
 };
-Array.prototype.product = function <T>(mapper: (el: T) => number = (el) => el as number) {
-  return this.reduce((acc, num) => mapper(num) * acc, 1);
+Array.prototype.product = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
+  return this.map(mapper).reduce((acc, num) => num * acc, 1);
 };
-Array.prototype.lcm = function <T>(mapper: (el: T) => number = (el) => el as number) {
-  return this.reduce((acc, num) => mapper(num).lcm(acc), 1);
+Array.prototype.lcm = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
+  return this.map(mapper).reduce((acc, num) => num.lcm(acc), 1);
 };
-Array.prototype.gcd = function <T>(mapper: (el: T) => number = (el) => el as number) {
-  return this.reduce((acc, num) => mapper(num).gcd(acc), 1);
+Array.prototype.gcd = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
+  return this.map(mapper).reduce((acc, num) => num.gcd(acc), 1);
 };
-Array.prototype.min = function <T>(mapper: (el: T) => number = (el) => el as number) {
-  return this.reduce((acc, curr) => {
-    const value = mapper(curr);
-    return value < acc ? value : acc;
-  }, mapper(this[0]));
+Array.prototype.min = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
+  const mapped = this.map(mapper);
+  return mapped.reduce((acc, value) => (value < acc ? value : acc), mapped[0]);
 };
-Array.prototype.max = function <T>(mapper: (el: T) => number = (el) => el as number) {
-  return this.reduce((acc, curr) => {
-    const value = mapper(curr);
-    return value > acc ? value : acc;
-  }, mapper(this[0]));
+Array.prototype.max = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
+  const mapped = this.map(mapper);
+  return mapped.reduce((acc, value) => (value > acc ? value : acc), mapped[0]);
 };
 Array.prototype.distinct = function <T>(mapper: (el: T) => any = (el) => el) {
   return this.filter(uniqueByFilter(mapper));
 };
-Array.prototype.toObject = function <T, U>(keyMapper: (el: T) => string | number, valueMapper: (el: T) => U) {
-  return this.reduce((obj, el) => ({ ...obj, [keyMapper(el)]: valueMapper(el) }), {});
+Array.prototype.toObject = function <T, U>(keyMapper: (el: T, idx: number) => string | number, valueMapper: (el: T, idx: number) => U) {
+  const keys = this.map(keyMapper);
+  const values = this.map(valueMapper);
+  return this.reduce((obj, _, i) => ({ ...obj, [keys[i]]: values[i] }), {});
 };
 
 String.prototype.isNumber = function (): boolean {

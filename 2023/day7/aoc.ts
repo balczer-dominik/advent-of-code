@@ -1,4 +1,5 @@
 import { readInputs } from "../../util/input";
+import "../../util/helpers";
 
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
@@ -59,23 +60,19 @@ export const func1 = () =>
   games
     .map(([hand, bid]) => [hand, bid, getHandValue(hand)])
     .sort((a, b) => sortPlayers(a, b, cardStrengths))
-    .reduce((acc, [_, bid], idx) => acc + parseInt(bid) * (idx + 1), 0);
+    .sum(([_, bid], idx) => parseInt(bid) * (idx + 1));
 
 export const func2 = () =>
   games
-    .map(([hand, bid]) => [
-      hand,
-      bid,
-      getHandValue(
+    .map(([hand, bid]) => {
+      let value = getHandValue(
         hand
           .split("")
           .filter((c) => c !== "J")
           .join("")
-      ),
-    ])
-    .map(([hand, bid, value]) => {
+      );
       for (let index = 0; index < (hand.match(/J/g)?.length ?? 0); index++) value = upgrade(value);
       return [hand, bid, value];
     })
     .sort((a, b) => sortPlayers(a, b, cardStrengths2))
-    .reduce((acc, [_, bid], idx) => acc + parseInt(bid) * (idx + 1), 0);
+    .sum(([_, bid], idx) => parseInt(bid) * (idx + 1));

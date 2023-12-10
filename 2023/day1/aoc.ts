@@ -22,6 +22,5 @@ export const func2 = () =>
       "1"
     );
     const secondDigit = chars.reduce((winner, char) => (row.lastIndexOf(char) > row.lastIndexOf(winner) ? char : winner), "1");
-
     return parseInt(`${(chars.indexOf(firstDigit) % 9) + 1}` + `${(chars.indexOf(secondDigit) % 9) + 1}`);
   });
