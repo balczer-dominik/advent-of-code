@@ -57,8 +57,10 @@ export const move2D = ([fieldX, fieldY]: Tuple, dir: Direction2D): Tuple => {
 
 export const getNeighbor = <T>(map: Map2D<T>, coords: Tuple, direction: Direction2D) => getField2D(map, move2D(coords, direction));
 
-export const getNeighbors = <T>(map: Map2D<T>, coords: Tuple) =>
-  directions2D.map((direction) => getNeighbor(map, coords, direction)).filter((neighbor) => neighbor !== undefined);
+export const getNeighbors = <T>(map: Map2D<T>, coords: Tuple, orthogonalOnly: boolean = false) =>
+  (orthogonalOnly ? directions2DOrthogonal : directions2D)
+    .map((direction) => getNeighbor(map, coords, direction))
+    .filter((neighbor) => neighbor !== undefined);
 
 export const turnDirection2DOrthogonal: Record<Turn2D, Record<Direction2DOrthogonal, Direction2DOrthogonal>> = {
   RIGHT: {
