@@ -8,7 +8,7 @@ declare global {
   interface String {
     isNumber: () => boolean;
     toNumber: () => number;
-    numberSequence: () => number[];
+    numberSequence: (separator?: string) => number[];
   }
 }
 
@@ -18,8 +18,8 @@ String.prototype.isNumber = function () {
 String.prototype.toNumber = function () {
   return parseInt(this.valueOf());
 };
-String.prototype.numberSequence = function () {
-  return this.split(" ")
+String.prototype.numberSequence = function (separator: string = " ") {
+  return this.split(separator)
     .filter((s) => s !== "" && s.isNumber())
     .map(simpleParseInt);
 };
@@ -79,9 +79,6 @@ export const sortDescEx =
   (a: T, b: T) =>
     extractor(b) - extractor(a);
 
-export const maxReduce = (acc: number, curr: number) => (acc > curr ? acc : curr);
-export const minReduce = (acc: number, curr: number) => (acc < curr ? acc : curr);
-
 declare global {
   interface Array<T> {
     last: () => T | undefined;
@@ -121,11 +118,11 @@ Array.prototype.gcd = function <T>(mapper: (el: T, idx: number) => number = (el)
 };
 Array.prototype.min = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
   const mapped = this.map(mapper);
-  return mapped.reduce(minReduce, mapped[0]);
+  return mapped.reduce((acc: number, curr: number) => (acc < curr ? acc : curr), mapped[0]);
 };
 Array.prototype.max = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
   const mapped = this.map(mapper);
-  return mapped.reduce(maxReduce, mapped[0]);
+  return mapped.reduce((acc: number, curr: number) => (acc > curr ? acc : curr), mapped[0]);
 };
 Array.prototype.distinct = function <T>(mapper: (el: T) => any = (el) => el) {
   return this.filter(uniqueByFilter(mapper));

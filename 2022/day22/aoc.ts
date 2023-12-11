@@ -13,7 +13,7 @@ import {
   turnDirection2DOrthogonal,
   UP,
 } from "../../util/2d";
-import { minReduce, simpleParseInt } from "../../util/helpers";
+import { simpleParseInt } from "../../util/helpers";
 import { readInputs } from "../../util/input";
 import { abcMatcher, numericMatcher } from "../../util/regex";
 import { Triplet, Tuple, X, Y } from "../../util/Tuple";
@@ -47,11 +47,7 @@ const parseInput = (input: string[]) => {
     }
 
     row.split("").forEach((field, fieldIdx) => {
-      if (field === VOID) {
-        return;
-      } else {
-        rowMap!.set(fieldIdx, field as Field);
-      }
+      if (field !== VOID) rowMap!.set(fieldIdx, field as Field);
     });
   });
 
@@ -61,20 +57,14 @@ const parseInput = (input: string[]) => {
 
   turns.forEach((turn, idx) => {
     instructions.push(steps[idx]);
-    instructions.push(
-      parseShortDirection2D[turn as Direction2DShort] as Turn2D
-    );
+    instructions.push(parseShortDirection2D[turn as Direction2DShort] as Turn2D);
   });
   instructions.push(steps.last()!);
 
   return { map, instructions };
 };
 
-const wrapAround: WrappingFunction = (
-  map: Map2D<Field>,
-  currSpot: Tuple,
-  currDir: Direction2DOrthogonal
-) => {
+const wrapAround: WrappingFunction = (map: Map2D<Field>, currSpot: Tuple, currDir: Direction2DOrthogonal) => {
   const [offsetX, offsetY] = offset2D[opposite2D[currDir]];
 
   let iterSpot = currSpot;
@@ -187,13 +177,9 @@ const wrapAroundCube: WrappingFunction = (
   return { newSpot, newDir, fieldOnNewSpot: getField2D(map, newSpot)! };
 };
 
-const traverse = (
-  map: Map2D<Field>,
-  instructions: Instruction[],
-  wrapAround: WrappingFunction
-): Triplet => {
+const traverse = (map: Map2D<Field>, instructions: Instruction[], wrapAround: WrappingFunction): Triplet => {
   let currDir: Direction2DOrthogonal = RIGHT;
-  let currSpot: Tuple = [[...map.get(0)!.keys()].reduce(minReduce), 0];
+  let currSpot: Tuple = [[...map.get(0)!.keys()].min(), 0];
 
   instructions.forEach((instruction) => {
     if (typeof instruction === "number") {
@@ -243,9 +229,7 @@ const func = (input: string[], wrappingFunction: WrappingFunction) => {
 
   const destination = traverse(map, instructions, wrappingFunction);
 
-  return (
-    (destination[Y] + 1) * 1000 + (destination[X] + 1) * 4 + destination[2]
-  );
+  return (destination[Y] + 1) * 1000 + (destination[X] + 1) * 4 + destination[2];
 };
 
 console.log(1, func(input, wrapAround));

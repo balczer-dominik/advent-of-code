@@ -1,21 +1,16 @@
 import _ from "lodash";
-import { simpleParseInt } from "../../util/helpers";
+import "../../util/helpers";
 import { readInputs } from "../../util/input";
 
 const [input, testInput] = readInputs(__dirname);
 
 const getNewIndex = (oldIndex: number, moveBy: number, length: number) => {
   const index = (oldIndex + moveBy) % length;
-
-  if (index >= 0) {
-    return index;
-  }
-
-  return length + index;
+  return index >= 0 ? index : length + index;
 };
 
 const func = (input: string[], mixingCycles: number, decryptionKey: number) => {
-  let numbers = input.map(simpleParseInt).map((moveBy, order) => ({ moveBy, order }));
+  const numbers = input.map((moveBy, order) => ({ moveBy: parseInt(moveBy), order }));
 
   const numbersCopy = _.cloneDeep(numbers);
   for (let index = 0; index < mixingCycles; index++) {

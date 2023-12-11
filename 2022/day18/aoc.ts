@@ -1,4 +1,4 @@
-import { simpleParseInt, sortAsc, sortDesc } from "../../util/helpers";
+import { sortAsc, sortDesc } from "../../util/helpers";
 import { readInputs } from "../../util/input";
 import { Triplet } from "../../util/Tuple";
 
@@ -25,9 +25,7 @@ type GridMap = Map<number, { x: number; sidesCovered: Side[] }[]>;
 type CubeMap = Map<number, GridMap>;
 
 const func1 = (input: string[]) => {
-  const triplets = input.map(
-    (row) => [...row.split(",").map(simpleParseInt)] as Triplet
-  );
+  const triplets = input.map((row) => row.numberSequence(",") as Triplet);
 
   const map: CubeMap = constructMap(triplets);
 
@@ -76,9 +74,7 @@ const constructMap = (triplets: Triplet[]): CubeMap => {
 };
 
 const func2 = (input: string[]) => {
-  const triplets = input.map(
-    (row) => [...row.split(",").map(simpleParseInt)] as Triplet
-  );
+  const triplets = input.map((row) => row.numberSequence(",") as Triplet);
 
   const map: CubeMap = constructMap(triplets);
 
@@ -101,11 +97,7 @@ const func2 = (input: string[]) => {
       const y = current[Y] + v[Y];
       const z = current[Z] + v[Z];
 
-      if (
-        !x.isBetween(xLowerBound, xBound) ||
-        !y.isBetween(yLowerBound, yBound) ||
-        !z.isBetween(zLowerBound, zBound)
-      ) {
+      if (!x.isBetween(xLowerBound, xBound) || !y.isBetween(yLowerBound, yBound) || !z.isBetween(zLowerBound, zBound)) {
         return;
       }
 

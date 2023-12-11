@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { maxReduce, multiplyNumbers, simpleParseInt } from "../../util/helpers";
+import "../../util/helpers";
 import { readInputs } from "../../util/input";
 import { Quartet } from "../../util/Tuple";
 
@@ -23,12 +23,12 @@ const parseBlueprints = (rows: string[]): Blueprint[] => {
     const [oreRobotCost, rest1] = row.split("Each ore robot costs ")[1].split(" ore. Each clay robot costs ");
     const [clayRobotCost, rest2] = rest1.split(" ore. Each obsidian robot costs ");
     const [obsidianRobotCosts, rest3] = rest2.split(" clay. Each geode robot costs ");
-    const geodeRobotCosts = rest3.split(" obsidian.")[0].split(" ore and ").map(simpleParseInt);
+    const geodeRobotCosts = rest3.split(" obsidian.")[0].numberSequence(" ore and ");
 
     return [
       [parseInt(oreRobotCost), 0, 0, 0],
       [parseInt(clayRobotCost), 0, 0, 0],
-      [...obsidianRobotCosts.split(" ore and ").map(simpleParseInt), 0, 0],
+      [...obsidianRobotCosts.numberSequence(" ore and "), 0, 0],
       [geodeRobotCosts[0], 0, geodeRobotCosts[1], 0],
     ] as Blueprint;
   });
@@ -41,7 +41,7 @@ const mostCollectable = (blueprint: Blueprint, timeLeft: number) => {
     minute: 1,
   };
 
-  const oreLimit = blueprint.map((robotCost) => robotCost[ORE]).reduce(maxReduce);
+  const oreLimit = blueprint.max((robotCost) => robotCost[ORE]);
 
   let queue = [startingState];
   let bestOutcome: State = startingState;

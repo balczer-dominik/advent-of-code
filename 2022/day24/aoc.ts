@@ -1,13 +1,5 @@
-import {
-  Direction2DOrthogonal,
-  directions2DOrthogonal,
-  DOWN,
-  LEFT,
-  move2D,
-  RIGHT,
-  UP,
-} from "../../util/2d";
-import { maxReduce, simpleParseInt } from "../../util/helpers";
+import { Direction2DOrthogonal, directions2DOrthogonal, DOWN, LEFT, move2D, RIGHT, UP } from "../../util/2d";
+import "../../util/helpers";
 import { readInputs } from "../../util/input";
 import { Tuple, X, Y } from "../../util/Tuple";
 
@@ -42,8 +34,8 @@ const parseInput = (input: string[]): { blizzard: Wind[]; mapSize: Tuple } => {
     })
   );
 
-  const mapSizeX = blizzard.map((b) => b.pos[X]).reduce(maxReduce);
-  const mapSizeY = blizzard.map((b) => b.pos[Y]).reduce(maxReduce);
+  const mapSizeX = blizzard.max((b) => b.pos[X]);
+  const mapSizeY = blizzard.max((b) => b.pos[Y]);
 
   return { blizzard, mapSize: [mapSizeX, mapSizeY] };
 };
@@ -89,24 +81,13 @@ const traverse = (blizzard: Wind[], goals: string[], mapSize: Tuple) => {
     const nextReachable: Set<string> = new Set();
 
     currReachable.forEach((reachable) => {
-      const [x, y] = reachable.split(",").map(simpleParseInt);
+      const [x, y] = reachable.numberSequence(",");
 
-      (
-        [
-          [x, y],
-          ...directions2DOrthogonal.map((direction) =>
-            move2D([x, y], direction)
-          ),
-        ] as Tuple[]
-      ).forEach((newPos) => {
+      ([[x, y], ...directions2DOrthogonal.map((direction) => move2D([x, y], direction))] as Tuple[]).forEach((newPos) => {
         if (isOutSideMap(newPos, mapSize)) {
           return;
         }
-        if (
-          blizzard.some(
-            (wind) => wind.pos[X] === newPos[X] && wind.pos[Y] === newPos[Y]
-          )
-        ) {
+        if (blizzard.some((wind) => wind.pos[X] === newPos[X] && wind.pos[Y] === newPos[Y])) {
           return;
         }
 

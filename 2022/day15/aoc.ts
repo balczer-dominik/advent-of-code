@@ -1,4 +1,4 @@
-import { simpleParseInt, sortAscEx, sortDescEx } from "../../util/helpers";
+import { sortAscEx, sortDescEx } from "../../util/helpers";
 import { readInputs } from "../../util/input";
 
 const [input, testInput] = readInputs(__dirname);
@@ -16,8 +16,7 @@ const func = (input: string[]) => {
           .split("")
           .filter((t) => t !== "\r")
           .join("")
-          .split(",")
-          .map(simpleParseInt)
+          .numberSequence(",")
       )
       .map((t) => ({ x: t[0], y: t[1] }))
   );
@@ -42,25 +41,19 @@ const func = (input: string[]) => {
   const dropSand = (to: Coord): void => {
     const blocked = [...walls, ...sand];
     let down = {
-      ...(blocked
-        .filter((o) => o.x === to.x && o.y > to.y)
-        .sort(sortAscEx((c) => c.y))[0] ?? { x: to.x, y: floorLevel }),
+      ...(blocked.filter((o) => o.x === to.x && o.y > to.y).sort(sortAscEx((c) => c.y))[0] ?? { x: to.x, y: floorLevel }),
     };
     down = { ...down, y: down.y - 1 };
     if (down.y == floorLevel - 1) {
       sand.push(down);
       return;
     }
-    const hasBelowLeft = blocked.some(
-      (b) => b.x === down.x - 1 && b.y === down.y + 1
-    );
+    const hasBelowLeft = blocked.some((b) => b.x === down.x - 1 && b.y === down.y + 1);
     if (!hasBelowLeft) {
       dropSand({ x: down.x - 1, y: down.y + 1 });
       return;
     }
-    const hasBelowRight = blocked.some(
-      (b) => b.x === down.x + 1 && b.y === down.y + 1
-    );
+    const hasBelowRight = blocked.some((b) => b.x === down.x + 1 && b.y === down.y + 1);
     if (!hasBelowRight) {
       dropSand({ x: down.x + 1, y: down.y + 1 });
       return;
@@ -120,8 +113,5 @@ function constructWalls(parsed: Coord[][]) {
 }
 
 function onlyUnique(value: Coord, index: number, self: Coord[]) {
-  return (
-    self.indexOf(self.find((s) => s.x === value.x && s.y === value.y)!) ===
-    index
-  );
+  return self.indexOf(self.find((s) => s.x === value.x && s.y === value.y)!) === index;
 }

@@ -13,7 +13,7 @@ import {
   UPPER_LEFT,
   UPPER_RIGHT,
 } from "../../util/2d";
-import { maxReduce, minReduce } from "../../util/helpers";
+import "../../util/helpers";
 import { readInputs } from "../../util/input";
 import { Tuple, X, Y } from "../../util/Tuple";
 
@@ -21,7 +21,7 @@ const [input, testInput] = readInputs(__dirname);
 
 type MovePlan = {
   moveTo: Direction2DOrthogonal;
-  neighboursToCheck: Direction2D[];
+  neighborsToCheck: Direction2D[];
 };
 
 type ElfMove = {
@@ -31,10 +31,10 @@ type ElfMove = {
 };
 
 const defaultMovePlans: MovePlan[] = [
-  { moveTo: UP, neighboursToCheck: [UP, UPPER_RIGHT, UPPER_LEFT] },
-  { moveTo: DOWN, neighboursToCheck: [DOWN, LOWER_LEFT, LOWER_RIGHT] },
-  { moveTo: LEFT, neighboursToCheck: [LEFT, UPPER_LEFT, LOWER_LEFT] },
-  { moveTo: RIGHT, neighboursToCheck: [RIGHT, UPPER_RIGHT, LOWER_RIGHT] },
+  { moveTo: UP, neighborsToCheck: [UP, UPPER_RIGHT, UPPER_LEFT] },
+  { moveTo: DOWN, neighborsToCheck: [DOWN, LOWER_LEFT, LOWER_RIGHT] },
+  { moveTo: LEFT, neighborsToCheck: [LEFT, UPPER_LEFT, LOWER_LEFT] },
+  { moveTo: RIGHT, neighborsToCheck: [RIGHT, UPPER_RIGHT, LOWER_RIGHT] },
 ];
 
 const parseInput = (input: string[]) => {
@@ -60,39 +60,32 @@ const parseInput = (input: string[]) => {
   return elfs;
 };
 
-const getProposedMoves = (
-  elfs: Map2D<number>,
-  movePlans: MovePlan[]
-): ElfMove[] => {
+const getProposedMoves = (elfs: Map2D<number>, movePlans: MovePlan[]): ElfMove[] => {
   let moves: ElfMove[] = [];
 
   elfs.forEach((row, rowIdx) =>
     row.forEach((elfIdx, colIdx) => {
-      const neighbours = directions2D.map((neighbourDir) => {
-        const [offsetX, offsetY] = offset2D[neighbourDir];
-        const [neighbourX, neighbourY] = [colIdx + offsetX, rowIdx + offsetY];
+      const neighbors = directions2D.map((neighborDir) => {
+        const [offsetX, offsetY] = offset2D[neighborDir];
+        const [neighborX, neighborY] = [colIdx + offsetX, rowIdx + offsetY];
 
         return {
-          dir: neighbourDir,
-          empty: !elfs.get(neighbourY)?.has(neighbourX),
+          dir: neighborDir,
+          empty: !elfs.get(neighborY)?.has(neighborX),
         };
       });
 
-      if (neighbours.every((n) => n.empty)) {
+      if (neighbors.every((n) => n.empty)) {
         return;
       }
 
       for (let movePlan of movePlans) {
-        if (
-          movePlan.neighboursToCheck.every(
-            (dir) => neighbours.filter((n) => n.dir === dir)[0].empty
-          )
-        ) {
+        if (movePlan.neighborsToCheck.every((dir) => neighbors.filter((n) => n.dir === dir)[0].empty)) {
           const [offsetX, offsetY] = offset2D[movePlan.moveTo];
-          const [neighbourX, neighbourY] = [colIdx + offsetX, rowIdx + offsetY];
+          const [neighborX, neighborY] = [colIdx + offsetX, rowIdx + offsetY];
           moves.push({
             from: [colIdx, rowIdx],
-            to: [neighbourX, neighbourY],
+            to: [neighborX, neighborY],
             elfIdx,
           });
           break;
@@ -116,12 +109,7 @@ const func1 = (input: string[]) => {
 
     elfMoves.forEach((move) => {
       if (
-        elfMoves.some(
-          (otherMove) =>
-            otherMove.elfIdx !== move.elfIdx &&
-            otherMove.to[X] === move.to[X] &&
-            otherMove.to[Y] === move.to[Y]
-        )
+        elfMoves.some((otherMove) => otherMove.elfIdx !== move.elfIdx && otherMove.to[X] === move.to[X] && otherMove.to[Y] === move.to[Y])
       ) {
         return;
       }
@@ -158,12 +146,7 @@ const func2 = (input: string[]) => {
 
     elfMoves.forEach((move) => {
       if (
-        elfMoves.some(
-          (otherMove) =>
-            otherMove.elfIdx !== move.elfIdx &&
-            otherMove.to[X] === move.to[X] &&
-            otherMove.to[Y] === move.to[Y]
-        )
+        elfMoves.some((otherMove) => otherMove.elfIdx !== move.elfIdx && otherMove.to[X] === move.to[X] && otherMove.to[Y] === move.to[Y])
       ) {
         moveCount--;
         return;
@@ -189,14 +172,12 @@ const func2 = (input: string[]) => {
 };
 
 const getEmptyFields = (elfs: Map2D<number>): number => {
-  const elfCoords = [...elfs.entries()].flatMap(([y, row]) =>
-    [...row.keys()].map((x) => [x, y] as Tuple)
-  );
+  const elfCoords = [...elfs.entries()].flatMap(([y, row]) => [...row.keys()].map((x) => [x, y] as Tuple));
 
-  const lowerX = elfCoords.map((e) => e[X]).reduce(minReduce);
-  const lowerY = elfCoords.map((e) => e[Y]).reduce(minReduce);
-  const upperX = elfCoords.map((e) => e[X]).reduce(maxReduce);
-  const upperY = elfCoords.map((e) => e[Y]).reduce(maxReduce);
+  const lowerX = elfCoords.min((e) => e[X]);
+  const lowerY = elfCoords.min((e) => e[Y]);
+  const upperX = elfCoords.max((e) => e[X]);
+  const upperY = elfCoords.max((e) => e[Y]);
 
   return (upperY - lowerY + 1) * (upperX - lowerX + 1) - elfCoords.length;
 };
