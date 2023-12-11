@@ -1,9 +1,4 @@
-import {
-  divideNumbers,
-  multiplyNumbers,
-  subtractNumbers,
-  sumNumbers,
-} from "../../util/helpers";
+import { divideNumbers, multiplyNumbers, subtractNumbers, sumNumbers } from "../../util/helpers";
 import { readInputs } from "../../util/input";
 
 const [input, testInput] = readInputs(__dirname);
@@ -25,7 +20,7 @@ const mapToOperation = (operator: string) => {
     case "/":
       return divideNumbers;
     default:
-      throw new Error("invalid opeartor");
+      throw new Error("invalid operator");
   }
 };
 
@@ -54,10 +49,7 @@ const parseInput = (input: string[]) => {
   return { toDo, done };
 };
 
-const calculateRoot = (
-  toDo: Map<string, MonkeyOperator>,
-  done: Map<string, number>
-): number => {
+const calculateRoot = (toDo: Map<string, MonkeyOperator>, done: Map<string, number>): number => {
   while (toDo.size > 0) {
     toDo.forEach((monkey, name) => {
       const left = done.get(monkey.left);
