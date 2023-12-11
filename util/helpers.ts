@@ -95,8 +95,8 @@ declare global {
   }
 }
 
-Number.prototype.isBetween = function (lowerBound: number, upperBound: number, inclusive: boolean = false): boolean {
-  return this.valueOf() > lowerBound + (inclusive ? -1 : 0) && this.valueOf() < upperBound + (inclusive ? +1 : 0);
+Number.prototype.isBetween = function (a: number, b: number, inclusive: boolean = false): boolean {
+  return this.valueOf() > (a > b ? b : a) + (inclusive ? -1 : 0) && this.valueOf() < (a < b ? b : a) + (inclusive ? +1 : 0);
 };
 Number.prototype.gcd = function (otherNumber: number) {
   let result = this.valueOf();
