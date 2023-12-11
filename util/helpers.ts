@@ -101,17 +101,17 @@ declare global {
 Array.prototype.last = function <T>(): T | undefined {
   return this[this.length - 1];
 };
-Array.prototype.isEmpty = function (): boolean {
+Array.prototype.isEmpty = function () {
   return this.length === 0;
 };
 Array.prototype.partition = function (groupLength: number) {
   return this.length ? [this.splice(0, groupLength)].concat(this.partition(groupLength)) : [];
 };
 Array.prototype.sum = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
-  return this.map(mapper).reduce((acc, num) => num + acc, 0);
+  return this.map(mapper).reduce(sumNumbers, 0);
 };
 Array.prototype.product = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
-  return this.map(mapper).reduce((acc, num) => num * acc, 1);
+  return this.map(mapper).reduce(multiplyNumbers, 1);
 };
 Array.prototype.lcm = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
   return this.map(mapper).reduce((acc, num) => num.lcm(acc), 1);
@@ -121,11 +121,11 @@ Array.prototype.gcd = function <T>(mapper: (el: T, idx: number) => number = (el)
 };
 Array.prototype.min = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
   const mapped = this.map(mapper);
-  return mapped.reduce((acc, value) => (value < acc ? value : acc), mapped[0]);
+  return mapped.reduce(minReduce, mapped[0]);
 };
 Array.prototype.max = function <T>(mapper: (el: T, idx: number) => number = (el) => el as number) {
   const mapped = this.map(mapper);
-  return mapped.reduce((acc, value) => (value > acc ? value : acc), mapped[0]);
+  return mapped.reduce(maxReduce, mapped[0]);
 };
 Array.prototype.distinct = function <T>(mapper: (el: T) => any = (el) => el) {
   return this.filter(uniqueByFilter(mapper));
