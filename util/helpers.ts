@@ -150,18 +150,16 @@ export const bfs = <Field>(from: Field, to: Field, neighborExtractor: (field: Fi
   let curr: Field[] = [from];
 
   while (curr.last() !== to) {
-    if (!queue.isEmpty()) {
-      curr = queue.shift()!;
-    }
+    if (queue.length) curr = queue.shift()!;
 
     const head = curr.last()!;
 
-    neighborExtractor(head).forEach((neighbor) => {
-      if (!visited.some((n) => _.isEqual(n, neighbor))) {
+    neighborExtractor(head)
+      .filter((neighbor) => !visited.some((n) => _.isEqual(n, neighbor)))
+      .forEach((neighbor) => {
         visited.push(neighbor);
         queue.push([...curr, neighbor]);
-      }
-    });
+      });
   }
 
   return curr.slice(1);
