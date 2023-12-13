@@ -92,6 +92,7 @@ declare global {
     max: (mapper?: (el: T, idx: number) => number) => number;
     distinct: (mapper?: (el: T) => any) => Array<T>;
     toObject: <U>(keyMapper: (el: T, idx: number) => string | number, valueMapper: (el: T, idx: number) => U) => { [key: string]: U };
+    transposeStringArray: () => Array<string>;
   }
 }
 
@@ -131,6 +132,11 @@ Array.prototype.toObject = function <T, U>(keyMapper: (el: T, idx: number) => st
   const keys = this.map(keyMapper);
   const values = this.map(valueMapper);
   return this.reduce((obj, _, i) => ({ ...obj, [keys[i]]: values[i] }), {});
+};
+Array.prototype.transposeStringArray = function () {
+  const output = this[0].split("").map((_: string, colIndex: number) => this.map((row) => row[colIndex]).join(""));
+
+  return output;
 };
 
 // ------------TUPLE------------
