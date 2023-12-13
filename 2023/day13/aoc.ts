@@ -6,12 +6,9 @@ const TEST = false;
 const raw = TEST ? testInput : input;
 
 const patterns: string[][] = [[]];
-raw.forEach((row) => {
-  if (!row[0]) patterns.push([]);
-  else patterns.last()!.push(row);
-});
+raw.forEach((row) => (row[0] ? patterns.last()!.push(row) : patterns.push([])));
 
-const getReflectionDistance = (pattern: string[], multiplier: number = 1, canRepair: boolean = false) => {
+const getReflectionDistance = (pattern: string[], multiplier: number, canRepair: boolean = false) => {
   loop: for (let reflectionLine = 0; reflectionLine < pattern.length - 1; reflectionLine++) {
     const refSize = Math.min(reflectionLine + 1, pattern.length - reflectionLine - 1);
     let repaired = !canRepair;
@@ -31,7 +28,7 @@ const getReflectionDistance = (pattern: string[], multiplier: number = 1, canRep
 };
 
 export const func1 = () =>
-  patterns.sum((pattern) => getReflectionDistance(pattern, 100) || getReflectionDistance(pattern.transposeStringArray()) || 0);
+  patterns.sum((pattern) => getReflectionDistance(pattern, 100) || getReflectionDistance(pattern.transposeStringArray(), 1) || 0);
 
 export const func2 = () =>
   patterns.sum(
