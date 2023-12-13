@@ -7,7 +7,7 @@ const raw = TEST ? testInput : input;
 
 const patterns: string[][] = [[]];
 raw.forEach((row) => {
-  if (row[0] === undefined) patterns.push([]);
+  if (!row[0]) patterns.push([]);
   else patterns.last()!.push(row);
 });
 
