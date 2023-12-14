@@ -44,7 +44,7 @@ Number.prototype.isBetween = function (a: number, b: number, inclusive: boolean 
 };
 Number.prototype.gcd = function (otherNumber: number) {
   let result = this.valueOf();
-  for (let temp = otherNumber; otherNumber !== 0; ) {
+  for (let temp = otherNumber; otherNumber !== 0;) {
     otherNumber = result % otherNumber;
     result = temp;
     temp = otherNumber;
@@ -65,19 +65,19 @@ export const reverseKeyValues = (obj: object) => Object.fromEntries(Object.entri
 export const uniqueFilter = <T>(value: T, index: number, self: T[]) => self.indexOf(value) === index;
 export const uniqueByFilter =
   <T, E>(keyExtractor: (obj: T) => E) =>
-  (value: T, index: number, self: T[]) =>
-    self.findIndex((s) => keyExtractor(s) === keyExtractor(value))! === index;
+    (value: T, index: number, self: T[]) =>
+      self.findIndex((s) => keyExtractor(s) === keyExtractor(value))! === index;
 
 export const sortAsc = (a: number, b: number) => a - b;
 export const sortDesc = (a: number, b: number) => b - a;
 export const sortAscEx =
   <T>(extractor: (item: T) => number) =>
-  (a: T, b: T) =>
-    extractor(a) - extractor(b);
+    (a: T, b: T) =>
+      extractor(a) - extractor(b);
 export const sortDescEx =
   <T>(extractor: (item: T) => number) =>
-  (a: T, b: T) =>
-    extractor(b) - extractor(a);
+    (a: T, b: T) =>
+      extractor(b) - extractor(a);
 
 declare global {
   interface Array<T> {
@@ -91,7 +91,7 @@ declare global {
     min: (mapper?: (el: T, idx: number) => number) => number;
     max: (mapper?: (el: T, idx: number) => number) => number;
     distinct: (mapper?: (el: T) => any) => Array<T>;
-    toObject: <U>(keyMapper: (el: T, idx: number) => string | number, valueMapper: (el: T, idx: number) => U) => { [key: string]: U };
+    toObject: <U>(keyMapper: (el: T, idx: number, array: T[]) => string | number, valueMapper: (el: T, idx: number, array: T[]) => U) => { [key: string]: U };
     transposeStringArray: () => Array<string>;
   }
 }
@@ -128,7 +128,7 @@ Array.prototype.max = function <T>(mapper: (el: T, idx: number) => number = (el)
 Array.prototype.distinct = function <T>(mapper: (el: T) => any = (el) => el) {
   return this.filter(uniqueByFilter(mapper));
 };
-Array.prototype.toObject = function <T, U>(keyMapper: (el: T, idx: number) => string | number, valueMapper: (el: T, idx: number) => U) {
+Array.prototype.toObject = function <T, U>(keyMapper: (el: T, idx: number, array: T[]) => string | number, valueMapper: (el: T, idx: number, array: T[]) => U) {
   const keys = this.map(keyMapper);
   const values = this.map(valueMapper);
   return this.reduce((obj, _, i) => ({ ...obj, [keys[i]]: values[i] }), {});
