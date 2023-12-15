@@ -8,54 +8,26 @@ const raw = TEST ? testInput : input;
 
 const parsed = raw[0].split(",");
 
-export const func1 = () => {
-  return parsed.sum((string) =>
-    string.split("").reduce((acc, curr) => {
-      const ascii = curr.charCodeAt(0);
-      console.log(((acc + ascii) * 17) % 256);
-      return ((acc + ascii) * 17) % 256;
-    }, 0)
-  );
-};
+const hashString = (string: string) => string.split("").reduce((acc, curr) => ((acc + curr.charCodeAt(0)) * 17) % 256, 0);
+
+export const func1 = () => parsed.sum(hashString);
 
 export const func2 = () => {
-  const boxes = new Map<number, Tuple<string, number>[]>();
+  const boxes = new Map<number, Tuple<string>[]>();
 
   parsed.forEach((string) => {
-    if (string.includes("-")) {
-      const [lensToRemove] = string.split("-");
-      const boxIdx = lensToRemove.split("").reduce((acc, curr) => {
-        const ascii = curr.charCodeAt(0);
-        console.log(((acc + ascii) * 17) % 256);
-        return ((acc + ascii) * 17) % 256;
-      }, 0);
-      const box = boxes.get(boxIdx);
-      if (box) {
-        boxes.set(
-          boxIdx,
-          box.filter(([lens]) => lens !== lensToRemove)
-        );
-      }
-    } else {
-      const [lens, focalLength] = string.split("=");
-      const boxIdx = lens.split("").reduce((acc, curr) => {
-        const ascii = curr.charCodeAt(0);
-        console.log(((acc + ascii) * 17) % 256);
-        return ((acc + ascii) * 17) % 256;
-      }, 0);
-      const box = boxes.get(boxIdx);
-      if (!box || !box.find(([l]) => l === lens)) {
-        boxes.set(boxIdx, [...(box ?? []), [lens, parseInt(focalLength)]]);
-      } else {
-        boxes.set(
-          boxIdx,
-          box.map(([l, fl]) => (l === lens ? [lens, parseInt(focalLength)] : [l, fl]))
-        );
-      }
-    }
+    const [newLens, newFocalLength] = string.split(/[-=]/);
+    const boxIdx = hashString(newLens);
+    const lenses = boxes.get(boxIdx) ?? [];
+    const newLenses = string.includes("-")
+      ? lenses.filter(([lens]) => lens !== newLens)
+      : !lenses.find(([lens]) => lens === newLens)
+      ? [...lenses, [newLens, newFocalLength]]
+      : lenses.map(([lens, focalLength]) => (lens === newLens ? [newLens, newFocalLength] : [lens, focalLength]));
+    boxes.set(boxIdx, newLenses as Tuple<string>[]);
   });
 
-  return [...boxes.entries()].sum(([boxIdx, content]) =>
-    content.sum(([lens, focalLength], lensIdx) => (1 + boxIdx) * (1 + lensIdx) * focalLength)
+  return [...boxes.entries()].sum(([boxIdx, lenses]) =>
+    lenses.sum(([_, focalLength], lensIdx) => (1 + boxIdx) * (1 + lensIdx) * parseInt(focalLength))
   );
 };
