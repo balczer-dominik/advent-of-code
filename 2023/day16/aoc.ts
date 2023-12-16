@@ -39,7 +39,7 @@ const nextDir: Record<Mirror, Record<Direction2DOrthogonal, Array<Direction2DOrt
   },
 };
 
-const getNextMirror = ([fromX, fromY]: Tuple, direction: Direction2DOrthogonal) => {
+const getNextMirror = ([fromX, fromY]: Tuple, direction: Direction2DOrthogonal): Tuple => {
   let nextCoord;
   switch (direction) {
     case UP:
@@ -59,66 +59,56 @@ const getNextMirror = ([fromX, fromY]: Tuple, direction: Direction2DOrthogonal) 
   return direction === UP || direction === DOWN ? [fromX, nextCoord] : [nextCoord, fromY];
 };
 
-//7156
-//7386
-
-const getLitSize = (entryPoint: Tuple, entryDir: Direction2DOrthogonal) => {
-  const beamCache = new Set<string>();
+const getNumberOfEnergized = (entryPoint: Tuple, entryDir: Direction2DOrthogonal) => {
+  const beams = new Set<string>();
   const entryMirrorType = mirrors.find(({ x, y }) => x === entryPoint[X] && y === entryPoint[Y])?.type;
-  const firstDir = entryMirrorType ? nextDir[entryMirrorType][entryDir as Direction2DOrthogonal] : [entryDir];
+  const firstDir = entryMirrorType ? nextDir[entryMirrorType][entryDir] : [entryDir];
   let beamQueue = firstDir.map((dir) => ({ start: entryPoint, dir }));
-  const lit = new Set();
 
   while (beamQueue.length) {
-    let newBeams = beamQueue.flatMap(({ start, dir }) => {
-      const nextMirror = getNextMirror(start as Tuple, dir as Direction2DOrthogonal);
-      const stringified = `${start[X]}->${start[Y]}=${nextMirror[X]}->${nextMirror[Y]}`;
-      if (nextMirror[X] === start[X] && nextMirror[Y] === start[Y]) return [];
-      if (beamCache.has(stringified)) return [];
-      beamCache.add(stringified);
-      const nextMirrorType = mirrors.find(({ x, y }) => x === nextMirror[X] && y === nextMirror[Y])?.type;
-      if (!nextMirrorType) return [];
-      return nextDir[nextMirrorType][dir as Direction2DOrthogonal].map((newDir) => ({
-        start: nextMirror as Tuple,
-        dir: newDir as Direction2DOrthogonal,
+    beamQueue = beamQueue.flatMap(({ start, dir }) => {
+      const mirrorPos = getNextMirror(start, dir);
+      if (mirrorPos[X] === start[X] && mirrorPos[Y] === start[Y]) return [];
+      const stringified = `${start[X]}-${start[Y]}=${mirrorPos[X]}-${mirrorPos[Y]}`;
+      if (beams.has(stringified)) return [];
+      beams.add(stringified);
+      const mirrorHit = mirrors.find(({ x, y }) => x === mirrorPos[X] && y === mirrorPos[Y])?.type;
+      if (!mirrorHit) return [];
+      return nextDir[mirrorHit][dir].map((newDir) => ({
+        start: mirrorPos,
+        dir: newDir,
       }));
     });
-
-    beamQueue = newBeams;
   }
 
-  beamCache.forEach((beam) => {
-    const [from, to] = beam.split("=");
-    const [fromX, fromY] = from.numberSequence("->");
-    const [toX, toY] = to.numberSequence("->");
+  const lit = new Set();
+
+  for (let beam of beams) {
+    const [[fromX, fromY], [toX, toY]] = beam.split("=").map((coord) => coord.numberSequence("-"));
     for (let y = Math.min(fromY, toY); y <= Math.max(fromY, toY); y++)
-      for (let x = Math.min(fromX, toX); x <= Math.max(fromX, toX); x++) lit.add(`${x}->${y}`);
-  });
-  let buffer = "";
-  for (let y = 0; y < raw.length; y++) {
-    for (let x = 0; x < raw[0].length; x++) buffer += lit.has(`${x}->${y}`) ? "#" : ".";
-    buffer += "\n";
+      for (let x = Math.min(fromX, toX); x <= Math.max(fromX, toX); x++) lit.add(`${x}-${y}`);
   }
 
   return lit.size;
 };
 
-export const func1 = () => {
-  return getLitSize([0, 0], RIGHT);
-};
+export const func1 = () => getNumberOfEnergized([0, 0], RIGHT);
 
-//7323 too low
 export const func2 = () => {
   return [
-    _.range(0, raw[0].length).flatMap((x) => [
-      [x, 0, DOWN],
-      [x, raw.length - 1, UP],
-    ]),
-    _.range(0, raw.length).flatMap((y) => [
-      [0, y, RIGHT],
-      [raw[0].length - 1, y, LEFT],
-    ]),
-  ]
-    .flat()
-    .max(([x, y, d]) => getLitSize([x as number, y as number], d as Direction2DOrthogonal));
+    ..._.range(0, raw[0].length).flatMap(
+      (x) =>
+        [
+          [x, 0, DOWN],
+          [x, raw.length - 1, UP],
+        ] as [number, number, Direction2DOrthogonal][]
+    ),
+    ..._.range(0, raw.length).flatMap(
+      (y) =>
+        [
+          [0, y, RIGHT],
+          [raw[0].length - 1, y, LEFT],
+        ] as [number, number, Direction2DOrthogonal][]
+    ),
+  ].max(([x, y, d]) => getNumberOfEnergized([x, y], d));
 };
