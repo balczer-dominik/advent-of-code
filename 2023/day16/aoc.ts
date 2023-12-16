@@ -94,8 +94,8 @@ const getNumberOfEnergized = (entryPoint: Tuple, entryDir: Direction2DOrthogonal
 
 export const func1 = () => getNumberOfEnergized([0, 0], RIGHT);
 
-export const func2 = () => {
-  return [
+export const func2 = () =>
+  [
     ...(_.range(0, raw[0].length).flatMap((x) => [
       [x, 0, DOWN],
       [x, raw.length - 1, UP],
@@ -105,4 +105,3 @@ export const func2 = () => {
       [raw[0].length - 1, y, LEFT],
     ]) as [number, number, Direction2DOrthogonal][]),
   ].max(([x, y, d]) => getNumberOfEnergized([x, y], d));
-};
