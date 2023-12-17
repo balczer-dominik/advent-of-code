@@ -51,7 +51,7 @@ const dijkstra = (minStep: number, maxStep: number) => {
     const curr = queue.shift()!;
     const currDistance = distances.get(curr)!;
     if (curr.startsWith(`${mapSize - 1}-${mapSize - 1}`)) return currDistance;
-    if (currDistance === Number.MAX_SAFE_INTEGER) throw new Error("Couldn't reach destination");
+    if (currDistance === Number.MAX_SAFE_INTEGER) return;
 
     closed.add(curr);
 
@@ -73,8 +73,6 @@ const dijkstra = (minStep: number, maxStep: number) => {
       }
     });
   }
-
-  throw new Error("Couldn't reach destination");
 };
 
 export const func1 = () => dijkstra(1, 3);
