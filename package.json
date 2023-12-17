@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "get": "ts-node scripts/get.ts",
     "1": "ts-node scripts/solve.ts 1",
-    "2": "ts-node scripts/solve.ts 2"
+    "2": "ts-node scripts/solve.ts 2",
+    "get": "ts-node scripts/get.ts"
   },
   "author": "",
   "license": "ISC",
@@ -15,7 +15,7 @@
     "@types/node": "^18.11.10",
     "dotenv": "^16.3.1",
     "lodash": "^4.17.21",
-    "node": "^19.2.0",
+    "node": "^21.2.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.3"
   }
