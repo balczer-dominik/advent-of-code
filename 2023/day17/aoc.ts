@@ -7,114 +7,75 @@ import { Tuple } from "../../util/Tuple";
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
 const raw = TEST ? testInput : input;
+const mapSize = raw.length;
 
-const nodes = raw.flatMap((row, y) =>
-  row
-    .numberSequence("")
-    .flatMap((c, x) => directions2DOrthogonal.flatMap((direction) => _.range(1, 4).map((steps) => `${x}-${y}-${direction}-${steps}`)))
-);
-const nodes2 = raw.flatMap((row, y) =>
-  row
-    .numberSequence("")
-    .flatMap((c, x) => directions2DOrthogonal.flatMap((direction) => _.range(4, 11).map((steps) => `${x}-${y}-${direction}-${steps}`)))
-);
+type NextStep = [number, number, number, Direction2DOrthogonal, number];
 
-const getNextSteps = (node: string): [number, number, number, Direction2DOrthogonal, number][] => {
-  const [x, y, direction, steps] = node.split("-");
-
-  return directions2DOrthogonal.flatMap((d) => {
-    if (d === opposite2D[direction as Direction2DOrthogonal]) return [];
-    if (d === direction && steps === "3") return [];
-
-    const [nX, nY] = move2D([parseInt(x), parseInt(y)], d);
-    if ([nX, nY].some((c) => c < 0 || c >= raw.length)) return [];
-
-    return [[nX, nY, parseInt(raw[nY][nX]), d, d === direction ? parseInt(steps) + 1 : 1]];
-  });
-};
-
-const getNextSteps2 = (node: string): [number, number, number, Direction2DOrthogonal, number][] => {
-  const [x, y, direction, steps] = node.split("-");
+const getNextSteps = (node: string, minStep: number, maxStep: number): NextStep[] => {
+  const [x, y, directionFrom, steps] = node.split("-");
   const jumpFrom = [parseInt(x), parseInt(y)] as Tuple;
 
-  return directions2DOrthogonal.flatMap((d) => {
-    if (d === opposite2D[direction as Direction2DOrthogonal]) return [];
+  return directions2DOrthogonal.flatMap((direction) => {
+    if (direction === opposite2D[directionFrom as Direction2DOrthogonal]) return [];
 
-    const incMin = d === direction ? 1 : 4;
-    const incMax = d === direction ? 10 - parseInt(steps) : 10;
+    const incMin = direction === directionFrom ? 1 : minStep;
+    const incMax = direction === directionFrom ? maxStep - parseInt(steps) : maxStep;
 
-    let neighbors = [] as ReturnType<typeof getNextSteps2>;
-
-    for (let inc = incMin; inc <= incMax; inc++) {
-      const [nX, nY] = move2D(jumpFrom, d, inc);
-      if (nX < 0 || nX >= raw[0].length || nY < 0 || nY >= raw.length) continue;
-      let jumpCost = 0;
-      for (let jumps = 1; jumps <= inc; jumps++) {
-        const [jX, jY] = move2D(jumpFrom, d, jumps);
-        jumpCost += parseInt(raw[jY][jX]);
-      }
-      neighbors.push([nX, nY, jumpCost, d, d === direction ? parseInt(steps) + inc : inc]);
-    }
-
-    return neighbors;
+    return _.range(incMin, incMax + 1).flatMap((inc) => {
+      const neighborCoords = move2D(jumpFrom, direction, inc);
+      if (neighborCoords.some((coord) => coord < 0 || coord >= mapSize)) return [];
+      const jumpCost = _.range(1, inc + 1).sum((jump) => {
+        const [jX, jY] = move2D(jumpFrom, direction, jump);
+        return parseInt(raw[jY][jX]);
+      });
+      return [[...neighborCoords, jumpCost, direction, direction === directionFrom ? parseInt(steps) + inc : inc]] as NextStep[];
+    });
   });
 };
 
-const dijkstra = (nodes: string[], neighborExtractor: typeof getNextSteps) => {
-  const distances = new Map<string, number>();
-  const prev = new Map<string, string>();
+const dijkstra = (minStep: number, maxStep: number) => {
+  const nodes = _.range(0, mapSize).flatMap((y) =>
+    _.range(0, mapSize).flatMap((x) =>
+      directions2DOrthogonal.flatMap((direction) => _.range(minStep, maxStep + 1).map((steps) => `${x}-${y}-${direction}-${steps}`))
+    )
+  );
+
+  let queue: string[] = ["0-0-RIGHT-0", ...nodes];
   const closed = new Set();
-  let queue: string[] = [];
 
-  nodes.forEach((node) => {
-    distances.set(node, Number.MAX_SAFE_INTEGER);
-    queue.push(node);
-  });
-
-  queue.unshift("0-0-RIGHT-0");
+  const distances = new Map<string, number>();
+  nodes.forEach((node) => distances.set(node, Number.MAX_SAFE_INTEGER));
   distances.set(`0-0-RIGHT-0`, 0);
 
-  let i = 0;
   while (queue.length) {
     const curr = queue.shift()!;
+    const currDistance = distances.get(curr)!;
+    if (curr.startsWith(`${mapSize - 1}-${mapSize - 1}`)) return currDistance;
+    if (currDistance === Number.MAX_SAFE_INTEGER) throw new Error("Couldn't reach destination");
+
     closed.add(curr);
 
-    const currDistance = distances.get(curr)!;
-    if (curr.startsWith(`${raw[0].length - 1}-${raw.length - 1}`)) return distances;
-    if (currDistance === Number.MAX_SAFE_INTEGER) return distances;
+    getNextSteps(curr, minStep, maxStep).forEach(([nX, nY, jumpDistance, direction, steps]) => {
+      const node = `${nX}-${nY}-${direction}-${steps}`;
 
-    neighborExtractor(curr).forEach(([nX, nY, jumpCost, direction, steps]) => {
-      const stringified = `${nX}-${nY}-${direction}-${steps}`;
+      if (closed.has(node)) return;
 
-      if (closed.has(stringified)) return;
+      const distance = currDistance + jumpDistance;
 
-      const alt = currDistance + jumpCost;
-
-      if (alt < distances.get(stringified)!) {
-        const oldIdx = queue.findIndex((s) => s === stringified);
+      if (distance < distances.get(node)!) {
+        const oldIdx = queue.findIndex((s) => s === node);
         queue.splice(oldIdx, 1);
 
-        const newIdx = queue.findIndex((s) => distances.get(s)! >= alt);
+        const newIdx = queue.findIndex((s) => distances.get(s)! >= distance);
+        queue.splice(newIdx, 0, node);
 
-        queue.splice(newIdx, 0, stringified);
-
-        distances.set(stringified, alt);
-        prev.set(stringified, curr);
+        distances.set(node, distance);
       }
     });
   }
 
-  return distances;
+  throw new Error("Couldn't reach destination");
 };
 
-export const func1 = () => {
-  return [...dijkstra(nodes, getNextSteps).entries()]
-    .filter(([k, v]) => k.startsWith(`${raw[0].length - 1}-${raw.length - 1}`))
-    .min(([k, v]) => v);
-};
-
-export const func2 = () => {
-  return [...dijkstra(nodes2, getNextSteps2).entries()]
-    .filter(([k, v]) => k.startsWith(`${raw[0].length - 1}-${raw.length - 1}`))
-    .min(([k, v]) => v);
-};
+export const func1 = () => dijkstra(1, 3);
+export const func2 = () => dijkstra(4, 10);
