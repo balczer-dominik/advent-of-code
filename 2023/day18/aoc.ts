@@ -39,18 +39,16 @@ const numToDir: Record<string, Direction2DOrthogonal> = {
 };
 
 export const getPaintedArea = (steps: [Direction2DOrthogonal, number][]) => {
-  const points: Tuple[] = [];
+  let head: Tuple = [0, 0];
+  let prevDir = steps.last()![0];
+  let perimeterCut = 0;
 
-  let head = [0, 0] as Tuple;
-  let prevDir;
-  let perimeterCut = cutArea[steps.last()![0]][steps[0][0]] / 4;
-
-  for (const [direction, stepCount] of steps) {
-    perimeterCut += (stepCount - 1) / 2 + (prevDir ? cutArea[prevDir][direction] / 4 : 0);
-    head = move2D(head, direction, stepCount);
+  const points = steps.map(([direction, stepCount]) => {
+    perimeterCut += (stepCount - 1) / 2 + cutArea[prevDir][direction] / 4;
     prevDir = direction;
-    points.push(head);
-  }
+    head = move2D(head, direction, stepCount);
+    return head;
+  });
 
   return shoelace(points) + perimeterCut;
 };
