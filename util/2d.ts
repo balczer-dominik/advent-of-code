@@ -77,4 +77,10 @@ export const turnDirection2DOrthogonal: Record<Turn2D, Record<Direction2DOrthogo
   },
 };
 
+export const shoelace = (points: Tuple[]) => {
+  const sum1 = points.slice(0, -1).sum(([x], i) => x * points[i + 1][Y]);
+  const sum2 = points.slice(1).sum(([x], i) => x * points[i][Y]);
+  return Math.abs(sum1 + points.last()![X] * points[0][Y] - sum2 - points.last()![Y] * points[0][X]) / 2;
+};
+
 export type Map2D<Field> = Map<number, Map<number, Field>>;
