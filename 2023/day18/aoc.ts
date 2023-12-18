@@ -12,25 +12,6 @@ const instructions = raw.map((row) => {
   return [parseShortDirection2D[direction as Direction2DShort], parseInt(count), color.slice(1, 8)] as const;
 });
 
-const cutArea: Record<string, Record<string, number>> = {
-  RIGHT: {
-    UP: 1,
-    DOWN: 3,
-  },
-  LEFT: {
-    UP: 3,
-    DOWN: 1,
-  },
-  UP: {
-    RIGHT: 3,
-    LEFT: 1,
-  },
-  DOWN: {
-    RIGHT: 1,
-    LEFT: 3,
-  },
-};
-
 const numToDir: Record<string, Direction2DOrthogonal> = {
   "0": RIGHT,
   "1": DOWN,
@@ -39,18 +20,14 @@ const numToDir: Record<string, Direction2DOrthogonal> = {
 };
 
 export const getPaintedArea = (steps: [Direction2DOrthogonal, number][]) => {
-  let head: Tuple = [0, 0];
-  let prevDir = steps.last()![0];
-  let perimeterCut = 0;
+  let perimeterCut = steps.sum(([_, stepCount]) => (stepCount - 1) / 2);
 
-  const points = steps.map(([direction, stepCount]) => {
-    perimeterCut += (stepCount - 1) / 2 + cutArea[prevDir][direction] / 4;
-    prevDir = direction;
-    head = move2D(head, direction, stepCount);
-    return head;
-  });
+  const [points] = steps.reduce(
+    ([points, head]: [Tuple[], Tuple], [direction, stepCount]) => [[...points, head], move2D(head, direction, stepCount)],
+    [[], [0, 0]]
+  );
 
-  return shoelace(points) + perimeterCut;
+  return shoelace(points) + perimeterCut + steps.length / 2 + 1;
 };
 
 export const func1 = () => getPaintedArea(instructions.map(([direction, stepCount]) => [direction, stepCount]));

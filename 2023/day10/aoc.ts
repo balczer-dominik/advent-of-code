@@ -12,12 +12,12 @@ import {
   getNeighbor,
   move2D,
   opposite2D,
+  shoelace,
 } from "../../util/2d";
 import { Tuple, X, Y } from "../../util/Tuple";
 
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
-
 const raw = TEST ? testInput : input;
 
 type Pipe = "|" | "-" | "L" | "J" | "7" | "F" | "S";
@@ -55,7 +55,5 @@ export const func1 = () => getLoop().length / 2;
 
 export const func2 = () => {
   const loop = getLoop();
-  const sum1 = loop.slice(0, -1).sum(([x], i) => x * loop[i + 1][Y]);
-  const sum2 = loop.slice(1).sum(([x], i) => x * loop[i][Y]);
-  return Math.abs(sum1 + loop.last()![X] * loop[0][Y] - sum2 - loop.last()![Y] * loop[0][X]) / 2 - loop.length / 2 + 1;
+  return shoelace(loop) - loop.length / 2 + 1;
 };
