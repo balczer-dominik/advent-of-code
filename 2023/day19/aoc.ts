@@ -1,96 +1,67 @@
 import { readInputs } from "../../util/input";
 import "../../util/helpers";
 import { Quartet } from "../../util/Tuple";
-import { cond } from "lodash";
-import _ from "lodash";
 
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
 const raw = TEST ? testInput : input;
 
-type Rule = { condition?: string; destination: string };
-const workflows = new Map<string, Rule[]>();
+const workflows = new Map<string, { condition?: string; destination: string }[]>();
 const parts: Quartet[] = [];
 
-let isParts = false;
-raw.forEach((row) => {
-  if (!isParts && row === "") {
-    isParts = true;
-    return;
-  }
+raw
+  .filter((row) => row[0])
+  .forEach((row) => {
+    if (row[0] !== "{") {
+      const [name, rest] = row.split("{");
+      const rules = rest
+        .slice(0, -1)
+        .split(",")
+        .map((rule) => rule.split(":"))
+        .map(([first, second]) => (!second ? { destination: first } : { condition: first, destination: second }));
+      workflows.set(name, rules);
+    } else {
+      const part = row
+        .slice(1, -1)
+        .split(",")
+        .map((s) => parseInt(s.split("=")[1]));
+      parts.push(part as Quartet);
+    }
+  });
 
-  if (!isParts) {
-    const [name, rest] = row.split("{");
-    const rules = rest
-      .split(",")
-      .map((rule) =>
-        rule
-          .split("")
-          .filter((c) => c !== "}")
-          .join("")
-          .split(":")
-      )
-      .map(([first, second]) => (!second ? { destination: first } : { condition: first, destination: second }));
-    workflows.set(name, rules);
-    return;
-  }
-
-  const trimmed = row
-    .split("")
-    .filter((c) => c !== "{" && c !== "}")
-    .join("")
-    .split(",")
-    .map((s) => parseInt(s.split("=")[1]));
-  parts.push(trimmed as Quartet);
-});
-
-export const func1 = () => {
-  const accepted: Quartet[] = [];
-  parts.forEach(([x, m, a, s]) => {
+export const func1 = () =>
+  parts.sum(([x, m, a, s]) => {
     let rules = workflows.get("in")!;
-    partCheck: while (true) {
-      workflowCheck: for (var { condition, destination } of rules) {
+    while (true) {
+      for (var { condition, destination } of rules) {
         if (!condition || eval(condition)) {
-          if (destination === "R") break partCheck;
-          if (destination === "A") {
-            accepted.push([x, m, a, s]);
-            break partCheck;
-          }
+          if (destination === "R") return 0;
+          if (destination === "A") return [x, m, a, s].sum();
           rules = workflows.get(destination)!;
-          break workflowCheck;
+          break;
         }
       }
     }
   });
 
-  return accepted.sum((q) => q.sum());
-};
-
 export const func2 = () => {
   const queue = [
     { node: "in", bounds: { x: { lb: 1, ub: 4000 }, m: { lb: 1, ub: 4000 }, a: { lb: 1, ub: 4000 }, s: { lb: 1, ub: 4000 } } },
   ];
-
-  const result = [] as Array<(typeof queue)[number]["bounds"]>;
+  const results = [];
 
   while (queue.length) {
-    const { node, bounds } = queue.shift()!;
-    console.log(node, bounds);
+    let { node, bounds } = queue.shift()!;
 
-    if (node === "R") {
-      continue;
-    }
+    if (node === "R") continue;
     if (node === "A") {
-      result.push(bounds);
+      results.push(bounds);
       continue;
     }
 
-    const rules = workflows.get(node)!;
-
-    let boundsAcc = _.cloneDeep(bounds);
-    rules.forEach(({ condition, destination }) => {
+    workflows.get(node)!.forEach(({ condition, destination }) => {
       if (!condition) {
-        queue.push({ node: destination, bounds: boundsAcc });
+        queue.push({ node: destination, bounds: bounds });
         return;
       }
 
@@ -104,12 +75,12 @@ export const func2 = () => {
 
       queue.push({
         node: destination,
-        bounds: { ...boundsAcc, [param]: { lb: upper ? boundsAcc[param].lb : lb, ub: upper ? ub : boundsAcc[param].ub } },
+        bounds: { ...bounds, [param]: { lb: upper ? bounds[param].lb : lb, ub: upper ? ub : bounds[param].ub } },
       });
 
-      boundsAcc = { ...boundsAcc, [param]: { lb: upper ? lb - 1 : boundsAcc[param].lb, ub: upper ? boundsAcc[param].ub : ub + 1 } };
+      bounds = { ...bounds, [param]: { lb: upper ? lb - 1 : bounds[param].lb, ub: upper ? bounds[param].ub : ub + 1 } };
     });
   }
 
-  return result.sum((r) => (r.a.ub - r.a.lb + 1) * (r.m.ub - r.m.lb + 1) * (r.x.ub - r.x.lb + 1) * (r.s.ub - r.s.lb + 1));
+  return results.sum((result) => Object.values(result).product((v) => v.ub - v.lb + 1));
 };
