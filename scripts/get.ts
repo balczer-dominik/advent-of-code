@@ -1,11 +1,11 @@
-import { copyFile, copyFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, writeFileSync } from "fs";
 import * as dotenv from "dotenv";
 import path from "path";
 
 dotenv.config();
 
-const year = new Date().getFullYear();
-const day = new Date().getDate();
+const year = process.argv.length > 3 ? process.argv[3] : new Date().getFullYear();
+const day = process.argv.length > 2 ? process.argv[2] : new Date().getDate();
 
 const templateSrc = path.join(__dirname, `../template/aoc.ts`);
 const tgtDir = path.join(__dirname, `../${year}/day${day}`);
