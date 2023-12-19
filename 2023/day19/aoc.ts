@@ -61,7 +61,7 @@ export const func2 = () => {
 
     workflows.get(node)!.forEach(({ condition, destination }) => {
       if (!condition) {
-        queue.push({ node: destination, bounds: bounds });
+        queue.push({ node: destination, bounds });
         return;
       }
 
