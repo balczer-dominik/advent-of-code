@@ -17,53 +17,35 @@ const getCanReachFor = (maxSteps: number) => {
   const even = maxSteps % 2 === 0;
   const canReach = new Set<string>();
   if (even) canReach.add(start);
-  const visited = new Set<string>().add(start);
-  let lastVisited = [start];
+
+  let lastVisited = new Set<string>().add(start);
 
   for (let steps = 0; steps < maxSteps; steps++) {
-    const toVisit = lastVisited
-      .flatMap((node) =>
-        directions2DOrthogonal
-          .map((direction) => move2D(node.numberSequence("=") as Tuple, direction))
-          .filter(([x, y]) => {
-            if (canReach.has(`${x}=${y}`) || visited.has(`${x}=${y}`)) return false;
-            const [xN, yN] = [x % mapWidth, y % mapHeight];
-            return fields.includes(`${xN < 0 ? xN + mapWidth : xN}=${yN < 0 ? yN + mapHeight : yN}`);
-          })
-          .map(([x, y]) => `${x}=${y}`)
-      )
-      .distinct();
+    const toVisit = new Set<string>();
+    [...lastVisited]
+      .flatMap((node) => directions2DOrthogonal.map((direction) => move2D(node.numberSequence("=") as Tuple, direction)))
+      .forEach(([x, y]) => {
+        const stringified = `${x}=${y}`;
+        if (canReach.has(stringified) || toVisit.has(stringified)) return;
+        const [xN, yN] = [x % mapWidth, y % mapHeight];
+        if (!fields.includes(`${xN < 0 ? xN + mapWidth : xN}=${yN < 0 ? yN + mapHeight : yN}`)) return;
 
-    toVisit.forEach((node) => {
-      if (steps % 2 === (even ? 1 : 0)) canReach.add(node);
-      visited.add(node);
-    });
+        if (steps % 2 === (even ? 1 : 0)) canReach.add(stringified);
+        toVisit.add(stringified);
+      });
 
     lastVisited = toVisit;
   }
 
-  const map = new Map<string, Set<string>>();
-
-  [...canReach.values()].forEach((node) => {
+  return [...canReach.values()].reduce((acc: { [key: string]: number }, node) => {
     const [x, y] = node.numberSequence("=");
 
     const xN = Math.floor(x / mapWidth);
     const yN = Math.floor(y / mapHeight);
     const quadrant = `${xN}=${yN}`;
 
-    let set = map.get(quadrant);
-    if (!set) {
-      set = new Set<string>();
-      map.set(quadrant, set);
-    }
-
-    set.add(node);
-  });
-
-  return [...map.entries()].toObject(
-    ([name]) => name,
-    (quadrant) => quadrant[1].size
-  );
+    return { ...acc, [quadrant]: (acc[quadrant] ?? 0) + 1 };
+  }, {});
 };
 
 export const func2 = () => {
@@ -78,7 +60,6 @@ export const func2 = () => {
   const brInnerBorder = quadrants["1=1"];
   const trOuterBorder = quadrants["2=-1"];
   const trInnerBorder = quadrants["1=-1"];
-
   const inner = [tlInnerBorder, blInnerBorder, brInnerBorder, trInnerBorder].sum((inner) => inner * (radius - 1));
   const outer = [tlOuterBorder, blOuterBorder, brOuterBorder, trOuterBorder].sum((outer) => outer * radius);
 
@@ -90,15 +71,8 @@ export const func2 = () => {
 
   const odd = quadrants["0=0"];
   const even = quadrants["1=0"];
-
   const oddSum = odd * (_.range(1, radius / 2 + 1).sum((x) => 2 * (x - 1)) * 4 + 1);
-  const evenSum = 4 * even * (radius / 2) ** 2;
-
-  console.log("axes", axes);
-  console.log("outer", outer);
-  console.log("inner", inner);
-  console.log("odd", oddSum, _.range(1, radius / 2 + 1).sum((x) => 2 * (x - 1)) * 4 + 1);
-  console.log("even", evenSum);
+  const evenSum = even * (radius / 2) ** 2 * 4;
 
   return axes + inner + outer + oddSum + evenSum;
 };
