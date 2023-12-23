@@ -3,18 +3,12 @@ import "../../util/helpers";
 
 const [input, testInput] = readInputs(__dirname);
 const TEST = false;
-
-const parseInput = () => {
-  const raw = TEST ? testInput : input;
-
-  return raw;
-};
-const parsed = parseInput();
+const raw = TEST ? testInput : input;
 
 export const func1 = () => {
-  return undefined;
+  return;
 };
 
 export const func2 = () => {
-  return undefined;
+  return;
 };
