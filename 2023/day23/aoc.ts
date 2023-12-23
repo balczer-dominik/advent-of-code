@@ -10,7 +10,6 @@ const neighborMap = new Map<string, string[]>();
 const neighborMapButILearnedToClimb = new Map<string, string[]>();
 
 type Slope = ">" | "v";
-type Trail = { head: string; visited: Set<string> };
 const slopToDir: Record<Slope, Direction2DOrthogonal> = {
   ">": RIGHT,
   v: DOWN,
@@ -49,25 +48,21 @@ const getMostScenicTrail = (neighborMap: Map<string, string[]>) => {
   const junctionNeighbors = new Map<string, { [key: string]: number }>();
 
   junctions.forEach((junction) => {
-    const queue: Trail[] = [{ head: junction, visited: new Set() }];
-    queue[0].visited.add(junction);
+    const queue: string[][] = [[junction]];
     const neighbors: { [key: string]: number } = {};
 
     while (queue.length) {
-      const { head, visited } = queue.shift()!;
+      const visited = queue.shift()!;
 
       neighborMap
-        .get(head)!
-        .filter((node) => !visited.has(node))
+        .get(visited.last()!)!
+        .filter((node) => !visited.includes(node))
         .forEach((newHead) => {
           if (junctions.includes(newHead)) {
-            neighbors[newHead] = visited.size;
+            neighbors[newHead] = visited.length;
             return;
           }
-
-          const newVisited = _.cloneDeep(visited);
-          newVisited.add(newHead);
-          queue.push({ head: newHead, visited: newVisited });
+          queue.push([...visited, newHead]);
         });
     }
 
