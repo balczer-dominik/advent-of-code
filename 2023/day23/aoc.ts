@@ -42,11 +42,9 @@ const getMostScenicTrail = (neighborMap: Map<string, string[]>) => {
   const junctions = raw.flatMap((row, y) =>
     row.split("").flatMap((c, x) => (c === "#" || (neighborMap.get(`${x}=${y}`)?.length ?? 0) <= 2 ? [] : [`${x}=${y}`]))
   );
-
   junctions.push(`${1}=${0}`, `${raw[0].length - 2}=${raw.length - 1}`);
 
   const junctionNeighbors = new Map<string, { [key: string]: number }>();
-
   junctions.forEach((junction) => {
     const queue: string[][] = [[junction]];
     const neighbors: { [key: string]: number } = {};
