@@ -1,3 +1,5 @@
+import { exit } from "process";
+
 const year = process.argv.length > 4 ? process.argv[4] : new Date().getFullYear();
 const day = process.argv.length > 3 ? process.argv[3] : new Date().getDate();
 
@@ -16,4 +18,4 @@ const main = async () => {
   }
 };
 
-main();
+main().then(() => exit());
