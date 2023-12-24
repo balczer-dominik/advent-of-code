@@ -6,10 +6,10 @@ const main = async () => {
 
   switch (parseInt(process.argv[2])) {
     case 1:
-      console.log(JSON.stringify(solverModule.func1(), null, 4));
+      console.log(JSON.stringify(await solverModule.func1(), null, 4));
       break;
     case 2:
-      console.log(JSON.stringify(solverModule.func2(), null, 4));
+      console.log(JSON.stringify(await solverModule.func2(), null, 4));
       break;
     default:
       throw new Error("No task number provided.");
