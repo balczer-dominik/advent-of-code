@@ -16,35 +16,22 @@ export const func1 = () => {
   return parseInt(rates.map((r) => r[0]).join(""), 2) * parseInt(rates.map((r) => r[1]).join(""), 2);
 };
 
-export const func2 = () => {
+const getValue = (majority: boolean) => {
   let iterator = new CircularIterator(..._.range(0, raw[0].length));
-  let idx = iterator.next();
   let data = [...raw];
-  let oxygen;
-  let co2;
-  while (true) {
-    const bits = data.map((b) => b[idx]);
-    const majority = bits.filter((b) => b === "0").length > bits.filter((b) => b === "1").length ? "0" : "1";
-    data = data.filter((number) => number[idx] === majority);
-    idx = iterator.next();
-    if (data.length === 1) {
-      oxygen = parseInt(data[0], 2);
-      break;
-    }
-  }
-  iterator = new CircularIterator(..._.range(0, raw[0].length));
-  idx = iterator.next();
-  data = [...raw];
-  while (true) {
-    const bits = data.map((b) => b[idx]);
-    const minority = bits.filter((b) => b === "0").length <= bits.filter((b) => b === "1").length ? "0" : "1";
-    data = data.filter((number) => number[idx] === minority);
-    idx = iterator.next();
-    if (data.length === 1) {
-      co2 = parseInt(data[0], 2);
-      break;
-    }
-  }
 
-  return oxygen * co2;
+  for (let idx = iterator.next(); data.length !== 1; idx = iterator.next()) {
+    const bits = data.map((b) => b[idx]);
+    const winner = (
+      majority
+        ? bits.filter((b) => b === "0").length > bits.filter((b) => b === "1").length
+        : bits.filter((b) => b === "0").length <= bits.filter((b) => b === "1").length
+    )
+      ? "0"
+      : "1";
+    data = data.filter((number) => number[idx] === winner);
+  }
+  return parseInt(data[0], 2);
 };
+
+export const func2 = () => getValue(true) * getValue(false);
